@@ -1,4 +1,6 @@
-coffee
-======
+The Coffee Shop
+=====================================
 
-Coffee shop
+A webapp about frequent coffee shop customers that have an account with the shop.
+
+
