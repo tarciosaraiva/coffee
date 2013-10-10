@@ -1,0 +1,40 @@
+.client a {
+    display: block;
+}
+
+.client a:hover {
+    text-decoration: none;
+}
+
+.client .info .name {
+    color: #222222;
+    font-size: 22px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.client .info .balance {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.client .info .fave {
+    color: #222222;
+}
+
+.name-index {
+    margin-top: 10px;
+    margin-bottom: 0;
+}
+
+.name-index li {
+    margin: 0 0 10px 0;
+    width: 48%;
+}
+
+.name-index .btn-idx {
+    display: block;
+    font-weight: bold;
+}
