@@ -47,23 +47,28 @@
             <div class="well">
                 @helper.form(action = routes.Clients.debit(client.id.get), 'class -> "clearfix", 'role -> "form") {
                     <h4>Debit from account</h4>
+                    @debitForm.globalError.map { error =>
+                        <p class="error">
+                            @error.message
+                        </p>
+                    }
                     <div class="form-group">
-                        <select id="coffee" name="coffee" class="form-control">
+                        <select id="coffee" name="coffee" class="form-control input-lg">
                         @coffees.map { c =>
                             @if(c.equals(client.coffeeType)) {
-                                <option selected value="@debitForm("coffee").value">@c</option>
+                                <option selected value="@c">@c</option>
                             } else {
-                                <option value="@debitForm("coffee").value">@c</option>
+                                <option value="@c">@c</option>
                             }
                         }
                         </select>
                         <br/>
-                        <select id="milk" name="milk" class="form-control">
+                        <select id="milk" name="milk" class="form-control input-lg">
                         @milks.map { m =>
                             @if(m.equals(client.milkType)) {
-                                <option selected value="@debitForm("milk").value">@m</option>
+                                <option selected value="@m">@m</option>
                             } else {
-                                <option value="@debitForm("milk").value">@m</option>
+                                <option value="@m">@m</option>
                             }
                         }
                         </select>
@@ -83,57 +88,9 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-lg btn-warning pull-right">Credit</button>
-                    }
+                }
             </div>
         </div>
     </div>
 
-    <!-- Debit modal -->
-    <div class="modal fade" id="debitModal" tabindex="-1" role="dialog" aria-labelledby="Debit amount" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Debit coffee</h4>
-                </div>
-                <div class="modal-body">
-                    <ul class="nav nav-pills">
-                    @coffees.map { c =>
-                        <li>
-                            <a href="#">@c</a>
-                        </li>
-                    }
-                    </ul>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    @*<!-- Credit modal -->*@
-    @*<div class="modal fade" id="creditModal" tabindex="-1" role="dialog" aria-labelledby="Credit amount" aria-hidden="true">*@
-    @*<div class="modal-dialog">*@
-    @*<div class="modal-content">*@
-    @*<div class="modal-header">*@
-    @*<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>*@
-    @*<h4 class="modal-title">Credit into account</h4>*@
-    @*</div>*@
-    @*<div class="modal-body">*@
-    @*@helper.form(action = routes.Clients.credit(1), 'class -> "form-inline clearfix", 'role -> "form") {*@
-@*<label class="sr-only" for="amount">Enter credit amount</label>*@
-@*<div class="input-group">*@
-@*<span class="input-group-addon">$</span>*@
-@*<input type="text" placeholder="Enter credit amount" name="amount" id="amount" class="form-control input-lg">*@
-@*<span class="input-group-addon">.00</span>*@
-@*</div>*@
-@*}*@
-@*</div>*@
-@*<div class="modal-footer">*@
-@*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
-@*<button type="button" class="btn btn-lg btn-primary">Credit</button>*@
-@*</div>*@
-@*</div>*@
-@*</div>*@
-@*</div>*@
-    }
+}

@@ -7,6 +7,7 @@ GET         /                          controllers.Application.home
 POST        /search                    controllers.Application.search
 GET         /:index                    controllers.Application.index(index: String)
 
+POST        /clients                   controllers.Clients.create
 GET         /clients/:id               controllers.Clients.show(id: Long)
 POST        /clients/:id/credit        controllers.Clients.credit(id: Long)
 POST        /clients/:id/debit         controllers.Clients.debit(id: Long)
