@@ -21,14 +21,15 @@
                         <button type="submit" class="btn btn-lg btn-primary">Search</button>
                     </span>
                 </div>
-
-                @form.globalError.map { error =>
-                    <p class="error">
-                        @error.message
-                    </p>
-                }
             }
             <hr/>
+
+            @flash.get("success").map { message =>
+                <div class="alert alert-success">
+                    <strong>Yay!</strong> @message
+                </div>
+            }
+
             @if(!results.isEmpty) {
                 <ul class="list-inline">
                 @for((client, idx) <- results.zipWithIndex) {
@@ -45,7 +46,17 @@
                 }
                 </ul>
             } else {
-                <div class="alert alert-info">Nothing to show yet. Try searching or tapping on the index to the right.</div>
+                @if(form.hasErrors) {
+                    @form.errors.map { error =>
+                        <div class="alert alert-danger">
+                            @error.message
+                        </div>
+                    }
+                } else {
+                    <div class="alert alert-info">
+                        Nothing to show yet. Try searching or tapping on the index to the right.
+                    </div>
+                }
             }
         </div>
         <div class="col-sm-3">

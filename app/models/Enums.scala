@@ -20,7 +20,8 @@ object Enums {
     "Full cream",
     "Skim",
     "Soy",
-    "Rice"
+    "Rice",
+    "None"
   )
 
 }

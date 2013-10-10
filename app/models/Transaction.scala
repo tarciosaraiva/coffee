@@ -34,7 +34,7 @@ object Transaction {
     }
   }
 
-  def create(transaction: Transaction): Transaction = {
+  def create(transaction: Transaction) = {
     DB.withConnection {
       implicit connection =>
         SQL(
@@ -48,9 +48,6 @@ object Transaction {
           'milkType -> transaction.milkType,
           'clientId -> transaction.client
         ).executeInsert()
-
-        transaction
-
     }
   }
 

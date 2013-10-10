@@ -88,7 +88,7 @@ object Client {
     }
   }
 
-  def create(client: Client): Client = {
+  def create(client: Client): Option[Long] = {
     DB.withConnection {
       implicit connection =>
         SQL(
@@ -101,9 +101,6 @@ object Client {
           'coffeeType -> client.coffeeType,
           'milkType -> client.milkType
         ).executeInsert()
-
-        client
-
     }
   }
 

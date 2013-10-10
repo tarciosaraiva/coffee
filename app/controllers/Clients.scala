@@ -7,12 +7,15 @@ import org.joda.time._
 import play.api.data.Form
 import play.api.data.Forms._
 import scala.Predef._
-import play.api.data.validation.Constraints._
 import anorm.Id
 
 object Clients extends Controller {
 
-  val creditForm = Form("amount" -> text.verifying(nonEmpty))
+  val creditForm = Form("amount" -> bigDecimal
+    .verifying("Amount must be greater than A$25.", {
+    _.>=(BigDecimal(25))
+  })
+  )
 
   val debitForm = Form(tuple(
     "coffee" -> nonEmptyText,
@@ -21,7 +24,10 @@ object Clients extends Controller {
 
   val createForm = Form(tuple(
     "name" -> nonEmptyText,
-    "balance" -> number(min = 25),
+    "balance" -> bigDecimal
+      .verifying("Balance must be greater than A$25.", {
+      _.>=(BigDecimal(25))
+    }),
     "coffee" -> nonEmptyText,
     "milk" -> nonEmptyText
   ))
@@ -36,9 +42,9 @@ object Clients extends Controller {
       creditForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.client(formWithErrors, debitForm, Client.findOne(id).get, Transaction.allByClient(id))),
         amount => {
-          Transaction.create(Transaction(DateTime.now, true, BigDecimal(amount), "", "", id))
+          Transaction.create(Transaction(DateTime.now, true, amount, "", "", id))
           Client.updateBalance(id)
-          Redirect(routes.Clients.show(id)).flashing(("message", "Credit applied!"))
+          Redirect(routes.Clients.show(id)).flashing(("success", "Credit applied."))
         })
   }
 
@@ -49,7 +55,7 @@ object Clients extends Controller {
         debit => {
           Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), debit._1, debit._2, id))
           Client.updateBalance(id)
-          Redirect(routes.Clients.show(id)).flashing(("message", "Debit applied!"))
+          Redirect(routes.Clients.show(id)).flashing(("success", "Debit applied."))
         })
   }
 
@@ -58,8 +64,19 @@ object Clients extends Controller {
       createForm.bindFromRequest.fold(
         formWithErrors => BadRequest,
         client => {
-          Client.create(Client(Id(1), client._1, BigDecimal(client._2), client._3, client._4))
-          Redirect(routes.Application.home)
+          // add the client
+          val newClientId = Client.create(Client(Id(1), client._1, BigDecimal(0), client._3, client._4)).get
+
+          // add two transactions, one for the top-up
+          Transaction.create(Transaction(DateTime.now, true, client._2, "", "", newClientId))
+
+          // and the other for the coffee
+          Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), client._3, client._4, newClientId))
+
+          // and then updates the client
+          Client.updateBalance(newClientId)
+
+          Redirect(routes.Application.home).flashing(("success", "Client created successfully."))
         })
   }
 
