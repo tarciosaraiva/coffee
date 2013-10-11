@@ -18,7 +18,9 @@
                     <label class="sr-only" for="term">Enter customer name</label>
                     <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control input-lg">
                     <span class="input-group-btn">
-                        <button type="submit" class="btn btn-lg btn-primary">Search</button>
+                        <button type="submit" class="btn btn-lg btn-primary">
+                            Search
+                        </button>
                     </span>
                 </div>
             }
@@ -26,7 +28,7 @@
 
             @flash.get("success").map { message =>
                 <div class="alert alert-success">
-                    <strong>Yay!</strong> @message
+                    <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
                 </div>
             }
 
@@ -49,12 +51,12 @@
                 @if(form.hasErrors) {
                     @form.errors.map { error =>
                         <div class="alert alert-danger">
-                            @error.message
+                            <span class="glyphicon glyphicon-remove-sign"></span> <strong>Heads up!</strong> @error.message
                         </div>
                     }
                 } else {
                     <div class="alert alert-info">
-                        Nothing to show yet. Try searching or tapping on the index to the right.
+                        <span class="glyphicon glyphicon-exclamation-sign"></span> Nothing to show yet. Try searching or tapping on the index to the right.
                     </div>
                 }
             }
