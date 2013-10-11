@@ -3,18 +3,20 @@
 # --- !Ups
 
 CREATE TABLE `transaction` (
-  `transaction_date` datetime not null,
-  `credit` tinyint(1) not null,
-  `amount` decimal(10,2) not null,
-  `coffee_type` varchar(50),
-  `milk_type` varchar(50),
-  `client_id` int(11)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  `transaction_date` DATETIME       NOT NULL,
+  `credit`           BOOLEAN        NOT NULL,
+  `amount`           DECIMAL(10, 2) NOT NULL,
+  `coffee_type`      VARCHAR(50),
+  `milk_type`        VARCHAR(50),
+  `client_id`        INT(11)
+);
 
-alter table `transaction` add constraint `fk_transaction_client` foreign key (`client_id`) references `client` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
-create index `idx_transaction_client` on `transaction` (`client_id`);
-create index `idx_transaction_date` on `transaction` (`transaction_date`);
+ALTER TABLE `transaction` ADD CONSTRAINT `fk_transaction_client` FOREIGN KEY (`client_id`) REFERENCES `client` (`id`)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;
+CREATE INDEX `idx_transaction_client` ON `transaction` (`client_id`);
+CREATE INDEX `idx_transaction_date` ON `transaction` (`transaction_date`);
 
 # --- !Downs
 
-DROP TABLE `transaction`;
+DROP TABLE IF EXISTS `transaction`;
