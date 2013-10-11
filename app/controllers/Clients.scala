@@ -14,8 +14,7 @@ object Clients extends Controller {
   val creditForm = Form("amount" -> bigDecimal
     .verifying("Amount must be greater than A$25.", {
     _.>=(BigDecimal(25))
-  })
-  )
+  }))
 
   val debitForm = Form(tuple(
     "coffee" -> nonEmptyText,
