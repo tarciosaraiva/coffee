@@ -3,7 +3,6 @@ scala:
 - 2.10.2
 
 jdk:
-- openjdk7
 - oraclejdk7
 
 env:
