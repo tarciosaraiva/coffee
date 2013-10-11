@@ -5,7 +5,7 @@
 # Home page
 GET         /                          controllers.Application.home
 POST        /search                    controllers.Application.search
-GET         /:index                    controllers.Application.index(index: String)
+GET         /index/:index              controllers.Application.index(index: String)
 
 POST        /clients                   controllers.Clients.create
 GET         /clients/:id               controllers.Clients.show(id: Long)
