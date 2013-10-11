@@ -48,7 +48,7 @@ object Client {
   def indexes: Seq[String] = {
     DB.withConnection {
       implicit connection =>
-        SQL("SELECT DISTINCT LEFT(c.name, 1) as itm FROM CLIENT C ORDER BY 1").as(str("itm") *)
+        SQL("SELECT DISTINCT UPPER(LEFT(c.name, 1)) as itm FROM CLIENT C ORDER BY 1").as(str("itm") *)
     }
   }
 

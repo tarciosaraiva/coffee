@@ -25,11 +25,13 @@ object Clients extends Controller {
   val createForm = Form(tuple(
     "name" -> nonEmptyText,
     "balance" -> bigDecimal
-      .verifying("Balance must be greater than A$25.", {
+      .verifying("Initial balance must be greater than A$25.", {
       _.>=(BigDecimal(25))
     }),
     "coffee" -> nonEmptyText,
-    "milk" -> nonEmptyText
+    "milk" -> nonEmptyText,
+    "addTransaction" -> boolean,
+    "goToCustomerRecord" -> boolean
   ))
 
   def show(id: Long) = Action {
@@ -62,7 +64,9 @@ object Clients extends Controller {
   def create = Action {
     implicit request =>
       createForm.bindFromRequest.fold(
-        formWithErrors => BadRequest,
+        formWithErrors => {
+          BadRequest
+        },
         client => {
           // add the client
           val newClientId = Client.create(Client(Id(1), client._1, BigDecimal(0), client._3, client._4)).get
@@ -71,12 +75,16 @@ object Clients extends Controller {
           Transaction.create(Transaction(DateTime.now, true, client._2, "", "", newClientId))
 
           // and the other for the coffee
-          Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), client._3, client._4, newClientId))
+          if (client._5)
+            Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), client._3, client._4, newClientId))
 
           // and then updates the client
           Client.updateBalance(newClientId)
 
-          Redirect(routes.Application.home).flashing(("success", "Client created successfully."))
+          if (client._6)
+            Redirect(routes.Clients.show(newClientId))
+          else
+            Redirect(routes.Application.home).flashing(("success", "Client created successfully."))
         })
   }
 
