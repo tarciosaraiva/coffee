@@ -1,0 +1,1 @@
+web:    play run -Dconfig.resource=production.conf --http.port=$PORT $PLAY_OPTS
