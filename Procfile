@@ -1,1 +1,1 @@
-web: bin/coffee -Dhttp.port=${PORT} ${JAVA_OPTS} -Dconfig.resource=production.conf
+web: target/universal/stage/bin/coffee -Dhttp.port=${PORT} -Dconfig.resource=production.conf
