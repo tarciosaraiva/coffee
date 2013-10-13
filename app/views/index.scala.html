@@ -36,7 +36,7 @@
                 <ul class="list-inline">
                 @for((client, idx) <- results.zipWithIndex) {
                     <li class="client col-sm-6">
-                        <a href="clients/@client.id" class="well well-sm clearfix">
+                        <a href="/clients/@client.id" class="well well-sm clearfix">
                             <div class="info">
                                 <p class="name">@client.name</p>
                                 <p class="balance @balance(client.balance)">Balance of @currency(client.balance)</p>
@@ -67,7 +67,7 @@
                 <ul class="name-index list-inline">
                 @indexes.map { idx =>
                     <li>
-                        <a href="index/@idx" class="btn btn-default btn-lg btn-idx">@idx</a>
+                        <a href="/index/@idx" class="btn btn-default btn-lg btn-idx">@idx</a>
                     </li>
                 }
                 </ul>
