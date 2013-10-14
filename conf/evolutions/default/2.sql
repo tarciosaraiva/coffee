@@ -20,3 +20,5 @@ CREATE INDEX `idx_transaction_date` ON `transaction` (`transaction_date`);
 # --- !Downs
 
 DROP TABLE IF EXISTS `transaction`;
+DROP INDEX `idx_transaction_client` ON `transaction`;
+DROP INDEX `idx_transaction_date` ON `transaction`;
