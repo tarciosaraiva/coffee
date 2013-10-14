@@ -3,7 +3,7 @@ package controllers
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
-import models.Client
+import models._
 import play.filters.csrf._
 
 object Application extends Controller {
@@ -11,6 +11,8 @@ object Application extends Controller {
   val searchForm = Form("term" -> text.verifying("Please enter a search term.", {
     !_.grouped(2).isEmpty
   }))
+
+  implicit val settings: Seq[Setting] = Setting.all
 
   def home = CSRFAddToken {
     Action {

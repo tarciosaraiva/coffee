@@ -32,6 +32,8 @@ object Clients extends Controller {
     "goToCustomerRecord" -> boolean
   ))
 
+  implicit val settings: Seq[Setting] = Setting.all
+
   def show(id: Long) = CSRFAddToken {
     Action {
       implicit request =>

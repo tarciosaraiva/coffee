@@ -1,4 +1,4 @@
-@(transactionForm: Form[(String, String, BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token)
+@(transactionForm: Form[(String, String, BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
 
     @import java.text._
     @import models.Enums._
@@ -13,7 +13,7 @@
 
     @main {
         <div class="row">
-            <div class="col-sm-7">
+            <div class="col-sm-8">
                 <h2>
                     @client.name <br/>
                     <small>Balance of @currency(client.balance)</small>
@@ -49,7 +49,7 @@
                     </table>
                 </div>
             </div>
-            <div class="col-sm-5">
+            <div class="col-sm-4">
                 <div class="well">
                     @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "clearfix", 'role -> "form") {
                         <h4>Debit from account</h4>

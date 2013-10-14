@@ -1,4 +1,4 @@
-@(form: Form[(String)], indexes: Seq[String], results: Seq[Client])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token)
+@(form: Form[(String)], indexes: Seq[String], results: Seq[Client])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
 
 @import java.text.NumberFormat
 

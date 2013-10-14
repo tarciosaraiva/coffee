@@ -1,4 +1,4 @@
-@(content: Html)(implicit token: play.filters.csrf.CSRF.Token)
+@(content: Html)(implicit token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
 
 @import models.Enums.coffees
 @import models.Enums.milks
@@ -7,22 +7,26 @@
 
 <html>
     <head>
-        <title>Coffee</title>
+        <title>@settings(1).value</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/main.css")">
         <link rel="stylesheet" media="screen" href="@routes.Assets.at("stylesheets/bootstrap.min.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
         <script src="@routes.Assets.at("javascripts/jquery-1.10.2.min.js")" type="text/javascript"></script>
         <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" type="text/javascript"></script>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     </head>
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-sm-6">
-                    <h1>
-                        <a href="/">The coffee shop</a>
-                    </h1>
+                <div class="col-sm-3">
+                    <img alt="@settings(1).value logo" src="data:image/png;base64,@settings(0).value" />
                 </div>
                 <div class="col-sm-6">
+                    <h1>
+                        <a href="/">@settings(1).value</a>
+                    </h1>
+                </div>
+                <div class="col-sm-3">
                     <h1 class="pull-right">
                         <a href="#addModal" data-toggle="modal" class="btn btn-default btn-primary btn-lg">
                             Add customer</a>
