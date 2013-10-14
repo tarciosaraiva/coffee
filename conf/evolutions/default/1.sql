@@ -4,7 +4,8 @@
 
 CREATE TABLE `client` (
   `id`          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `name`        VARCHAR(255)     NOT NULL,
+  `first_name`  VARCHAR(255)     NOT NULL,
+  `last_name`   VARCHAR(255),
   `balance`     DECIMAL(10, 2),
   `coffee_type` VARCHAR(50),
   `milk_type`   VARCHAR(50),
