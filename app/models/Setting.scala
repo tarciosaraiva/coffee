@@ -37,7 +37,7 @@ object Setting {
   def all: Seq[Setting] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select * from setting order by key").as(Setting.simple *)
+        SQL("select * from setting order by 2").as(Setting.simple *)
     }
   }
 
