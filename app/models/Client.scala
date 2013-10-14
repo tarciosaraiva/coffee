@@ -30,7 +30,7 @@ object Client {
 
   val simple = {
     get[Pk[Long]]("client.id") ~
-      get[String]("client.name") ~
+      get[String]("name") ~
       get[java.math.BigDecimal]("client.balance") ~
       get[String]("client.coffee_type") ~
       get[String]("client.milk_type") map {
@@ -41,21 +41,23 @@ object Client {
   def all: Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select * from client order by name").as(Client.simple *)
+        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, coffee_type, milk_type " +
+          "from client order by 1").as(Client.simple *)
     }
   }
 
   def indexes: Seq[String] = {
     DB.withConnection {
       implicit connection =>
-        SQL("SELECT DISTINCT UPPER(LEFT(c.name, 1)) as itm FROM CLIENT C ORDER BY 1").as(str("itm") *)
+        SQL("SELECT DISTINCT UPPER(LEFT(c.first_name, 1)) as itm FROM CLIENT C ORDER BY 1").as(str("itm") *)
     }
   }
 
   def indexes(index: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select * from client where lower(name) like lower({name}) order by name")
+        SQL("select id, concat(first_name, ' ', last_name) as `name`, balance, coffee_type, milk_type " +
+          "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> index.concat("%"))
           .as(Client.simple *)
     }
@@ -64,7 +66,8 @@ object Client {
   def findByName(name: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select * from client where lower(name) like lower({name}) order by name")
+        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, coffee_type, milk_type " +
+          "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> "%".concat(name).concat("%"))
           .as(Client.simple *)
     }
@@ -73,7 +76,8 @@ object Client {
   def findOne(id: Long): Option[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select * from client where id = {id}")
+        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, coffee_type, milk_type " +
+          "from client where id = {id}")
           .on('id -> id)
           .as(Client.simple.singleOpt)
     }
@@ -91,12 +95,15 @@ object Client {
   def create(client: Client): Option[Long] = {
     DB.withConnection {
       implicit connection =>
+        val splitName = client.name.split(" ")
         SQL(
           """
-          insert into `client`(`name`, `balance`, `coffee_type`, `milk_type`) values ({name}, {credit}, {coffeeType}, {milkType})
+          insert into `client`(`first_name`, `last_name`, `balance`, `coffee_type`, `milk_type`)
+          values ({first_name}, {last_name}, {credit}, {coffeeType}, {milkType})
           """
         ).on(
-          'name -> client.name,
+          'first_name -> splitName(0),
+          'last_name -> splitName(1),
           'credit -> client.balance.doubleValue(),
           'coffeeType -> client.coffeeType,
           'milkType -> client.milkType

@@ -13,10 +13,10 @@
     <div class="row">
         <div class="col-sm-9">
             <h2>Find coffee addict</h2>
-            @helper.form(action = routes.Application.search, 'class -> "form-inline clearfix", 'role -> "form") {
+            @helper.form(action = routes.Application.search, 'class -> "search-form form-inline clearfix", 'role -> "form") {
                 <div class="input-group">
                     <label class="sr-only" for="term">Enter customer name</label>
-                    <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control input-lg">
+                    <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control input-lg" autocomplete="off">
                     <span class="input-group-btn">
                         <button type="submit" class="btn btn-lg btn-primary">
                             Search
@@ -55,8 +55,8 @@
                         </div>
                     }
                 } else {
-                    <div class="alert alert-info">
-                        <span class="glyphicon glyphicon-exclamation-sign"></span> Nothing to show yet. Try searching or tapping on the index to the right.
+                    <div class="alert alert-warning">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Nothing to show yet.</strong> Try searching or tapping on the index to the right.
                     </div>
                 }
             }

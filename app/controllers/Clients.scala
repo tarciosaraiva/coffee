@@ -11,15 +11,13 @@ import anorm.Id
 
 object Clients extends Controller {
 
-  val creditForm = Form("amount" -> bigDecimal
-    .verifying("Amount must be greater than A$25.", {
-    _.>=(BigDecimal(25))
-  }))
-
-  val debitForm = Form(tuple(
-    "coffee" -> nonEmptyText,
-    "milk" -> nonEmptyText
-  ))
+  val transactionForm = Form(
+    tuple(
+      "coffee" -> text,
+      "milk" -> text,
+      "amount" -> bigDecimal,
+      "credit" -> boolean
+    ))
 
   val createForm = Form(tuple(
     "name" -> nonEmptyText,
@@ -35,29 +33,19 @@ object Clients extends Controller {
 
   def show(id: Long) = Action {
     implicit request =>
-      Ok(views.html.client(creditForm, debitForm, Client.findOne(id).get, Transaction.allByClient(id)))
+      Ok(views.html.client(transactionForm, Client.findOne(id).get, Transaction.allByClient(id)))
   }
 
-  def credit(id: Long) = Action {
+  def transaction(id: Long) = Action {
     implicit request =>
-      creditForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.client(formWithErrors, debitForm, Client.findOne(id).get, Transaction.allByClient(id))),
-        amount => {
-          Transaction.create(Transaction(DateTime.now, true, amount, "", "", id))
+      transactionForm.bindFromRequest.fold(
+        formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(id).get, Transaction.allByClient(id))),
+        trans => {
+          Transaction.create(Transaction(DateTime.now, trans._4, trans._3, trans._1, trans._2, id))
           Client.updateBalance(id)
-          Redirect(routes.Clients.show(id)).flashing(("success", "Credit applied."))
-        })
-  }
-
-  def debit(id: Long) = Action {
-    implicit request =>
-      debitForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.client(creditForm, formWithErrors, Client.findOne(id).get, Transaction.allByClient(id))),
-        debit => {
-          Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), debit._1, debit._2, id))
-          Client.updateBalance(id)
-          Redirect(routes.Clients.show(id)).flashing(("success", "Debit applied."))
-        })
+          Redirect(routes.Clients.show(id)).flashing(("success", "Transaction added successfully."))
+        }
+      )
   }
 
   def create = Action {

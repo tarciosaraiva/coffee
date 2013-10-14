@@ -1,4 +1,4 @@
-@(creditForm: Form[(BigDecimal)], debitForm: Form[(String, String)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash)
+@(transactionForm: Form[(String, String, BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash)
 
 @import java.text._
 @import models.Enums._
@@ -51,9 +51,9 @@
         </div>
         <div class="col-sm-5">
             <div class="well">
-                @helper.form(action = routes.Clients.debit(client.id.get), 'class -> "clearfix", 'role -> "form") {
+                @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "clearfix", 'role -> "form") {
                     <h4>Debit from account</h4>
-                    @debitForm.errors.map { error =>
+                    @transactionForm.errors.map { error =>
                         <p class="alert alert-danger">
                             <span class="glyphicon glyphicon-remove-sign"></span> @error.message
                         </p>
@@ -79,14 +79,16 @@
                         }
                         </select>
                     </div>
+                    <input type="hidden" id="credit" name="credit" value="false">
+                    <input type="hidden" id="amount" name="amount" value="-3.4">
                     <button type="submit" class="btn btn-lg btn-success pull-right">Debit</button>
                 }
 
                 <hr/>
 
-                @helper.form(action = routes.Clients.credit(client.id.get), 'class -> "clearfix", 'role -> "form") {
+                @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "clearfix", 'role -> "form") {
                     <h4>Credit into account</h4>
-                    @creditForm.errors.map { error =>
+                    @transactionForm.errors.map { error =>
                         <p class="alert alert-danger">
                             <span class="glyphicon glyphicon-remove-sign"></span> @error.message
                         </p>
@@ -98,6 +100,9 @@
                             <input type="text" placeholder="Enter amount" name="amount" value="25.00" id="amount" class="form-control input-lg">
                         </div>
                     </div>
+                    <input type="hidden" id="coffee" name="coffee" value="">
+                    <input type="hidden" id="milk" name="milk" value="">
+                    <input type="hidden" id="credit" name="credit" value="true">
                     <button type="submit" class="btn btn-lg btn-warning pull-right">Credit</button>
                 }
             </div>
