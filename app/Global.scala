@@ -1,10 +1,10 @@
 import anorm.Id
 import org.joda.time.DateTime
 import play.api._
+import play.api.mvc._
 import models._
 import models.Enums._
-import play.api.mvc.WithFilters
-import play.filters.gzip.GzipFilter
+import play.filters.gzip._
 
 object Global extends WithFilters(new GzipFilter()) {
 

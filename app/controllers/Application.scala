@@ -4,6 +4,7 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import models.Client
+import play.filters.csrf._
 
 object Application extends Controller {
 
@@ -11,22 +12,28 @@ object Application extends Controller {
     !_.grouped(2).isEmpty
   }))
 
-  def home = Action {
-    implicit request =>
-      Ok(views.html.index(searchForm, Client.indexes, List.empty))
+  def home = CSRFAddToken {
+    Action {
+      implicit request =>
+        Ok(views.html.index(searchForm, Client.indexes, List.empty))
+    }
   }
 
-  def search = Action {
-    implicit request =>
-      searchForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.index(formWithErrors, Client.indexes, List.empty)),
-        term => Ok(views.html.index(searchForm, Client.indexes, Client.findByName(term)))
-      )
+  def search = CSRFCheck {
+    Action {
+      implicit request =>
+        searchForm.bindFromRequest.fold(
+          formWithErrors => BadRequest(views.html.index(formWithErrors, Client.indexes, List.empty)),
+          term => Ok(views.html.index(searchForm, Client.indexes, Client.findByName(term)))
+        )
+    }
   }
 
-  def index(index: String) = Action {
-    implicit request =>
-      Ok(views.html.index(searchForm, Client.indexes, Client.indexes(index)))
+  def index(index: String) = CSRFAddToken {
+    Action {
+      implicit request =>
+        Ok(views.html.index(searchForm, Client.indexes, Client.indexes(index)))
+    }
   }
 
 }
