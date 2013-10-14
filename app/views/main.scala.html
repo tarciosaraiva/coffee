@@ -16,24 +16,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     </head>
     <body>
+        <br/>
         <div class="container">
             <div class="row">
-                <div class="col-sm-3">
-                    <img alt="@settings(1).value logo" src="data:image/png;base64,@settings(0).value" />
+                <div class="col-sm-2">
+                    <a href="/">
+                        <img alt="@settings(1).value logo" src="data:image/png;base64,@settings(0).value" />
+                    </a>
+                    <br/>
+                    <br/>
+                    <div class="text-center">
+                        <a href="#addModal" data-toggle="modal" class="btn btn-default btn-primary">Add customer</a>
+                    </div>
                 </div>
-                <div class="col-sm-6">
-                    <h1>
-                        <a href="/">@settings(1).value</a>
-                    </h1>
-                </div>
-                <div class="col-sm-3">
-                    <h1 class="pull-right">
-                        <a href="#addModal" data-toggle="modal" class="btn btn-default btn-primary btn-lg">
-                            Add customer</a>
-                    </h1>
+                <div class="col-sm-10">
+                    @content
                 </div>
             </div>
-            @content
         </div>
 
             <!-- Modal -->
