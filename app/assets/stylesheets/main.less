@@ -1,0 +1,53 @@
+@text-color: #f5f5f5;
+
+.search-form {
+  button {
+    padding: 16.5px 16px;
+    margin-top: -1px;
+  }
+}
+
+.client {
+  a {
+    display: block;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .info {
+    .name {
+      color: @text-color;
+      font-size: 22px;
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .balance {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .fave {
+      color: @text-color;
+    }
+  }
+}
+
+.name-index {
+  margin-top: 10px;
+  margin-bottom: 0;
+
+  li {
+    margin: 0 0 10px 0;
+    width: 48%;
+  }
+
+  .btn-idx {
+    display: block;
+    font-weight: bold;
+  }
+}
