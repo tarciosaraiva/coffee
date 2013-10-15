@@ -3,20 +3,21 @@
 # ~~~~
 
 # Home page
-GET         /                          controllers.Application.home
-POST        /search                    controllers.Application.search
-GET         /index/:index              controllers.Application.index(index: String)
+GET         /                               controllers.Application.home
+POST        /search                         controllers.Application.search
+GET         /index/:index                   controllers.Application.index(index: String)
 
-POST        /clients                   controllers.Clients.create
-GET         /clients/:id               controllers.Clients.show(id: Long)
-POST        /clients/:id/transaction   controllers.Clients.transaction(id: Long)
+POST        /clients                        controllers.Clients.create
+GET         /clients/:id                    controllers.Clients.show(id: Long)
+POST        /clients/:id/transaction        controllers.Clients.transaction(id: Long)
 
 # API Calls
-# POST        /api/search
-# GET         /api/index/:index
+POST        /api/search                     controllers.Api.search
+GET         /api/index                      controllers.Api.indexes
+GET         /api/index/:index               controllers.Api.index(index: String)
 # POST        /api/clients
 # GET         /api/clients/:id
 # POST        /api/clients/:id/transaction
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file              controllers.Assets.at(path="/public", file)
+GET         /assets/*file                   controllers.Assets.at(path="/public", file)

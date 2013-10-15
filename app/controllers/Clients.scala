@@ -84,10 +84,10 @@ object Clients extends Controller {
     }
   }
 
-  def all = Action {
-    Ok(Json.toJson(Client.all.map {
-      c => c.toJson
-    }))
-  }
+//  def all = Action {
+//    Ok(Json.toJson(Client.all.map {
+//      c => c.toJson
+//    }))
+//  }
 
 }
