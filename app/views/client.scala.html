@@ -1,100 +1,106 @@
 @(transactionForm: Form[(String, BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
-@import utils.Utils._
-@import tags._
-@main {
-    <div class="row">
-        <div class="col-sm-8">
-            <h2>
-                @client.name
-                <img src="@routes.Assets.at("images/twitter.png")"/>
-                <small>@client.twitter</small>
-            </h2>
+    @import utils.Utils._
+    @import tags._
+    @main {
+        <div class="row">
+            <div class="col-sm-8">
+                <h2>
+                    @client.name
+                    <img src="@routes.Assets.at("images/twitter.png")"/>
+                    <small>@client.twitter</small>
+                </h2>
 
-            <h3 class="@balance(client.balance)">Balance of @formatNumber(client.balance)</h3>
+                <h3 class="@balance(client.balance)">Balance of @formatNumber(client.balance)</h3>
 
-            @flash.get("success").map { message =>
-                <div class="alert alert-success">
-                    <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
+                @if(isBirthday(client.dob)) {
+                    <div class="alert alert-info">
+                        <span class="glyphicon glyphicon-gift"></span> Today is @client.name's birthday!
+                    </div>
+                }
+
+                @flash.get("success").map { message =>
+                    <div class="alert alert-success">
+                        <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
+                    </div>
+                }
+
+                <h3>Transactions</h3>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @transactions.map { t =>
+                            <tr>
+                                <td>@formatDateTime(t.transactionDate)</td>
+                                <td>@formatNumber(t.amount)</td>
+                                <td>@t.notes</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
                 </div>
-            }
-
-            <h3>Transactions</h3>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @transactions.map { t =>
-                        <tr>
-                            <td>@formatDateTime(t.transactionDate)</td>
-                            <td>@formatNumber(t.amount)</td>
-                            <td>@t.notes</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
             </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="well">
-                @if(client.balance.>(BigDecimal(3))) {
+            <div class="col-sm-4">
+                <div class="well">
+                    @if(client.balance.>(BigDecimal(3))) {
+                        @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "clearfix", 'role -> "form") {
+                            <h4>Debit from account</h4>
+                            @transactionForm.errors.map { error =>
+                                <p class="alert alert-danger">
+                                    <span class="glyphicon glyphicon-remove-sign"></span> @error.message
+                                </p>
+                            }
+                            <div class="form-group">
+                                <label class="sr-only" for="notes">Transaction notes</label>
+                                <input type="text" placeholder="Transaction notes" name="notes" id="notes" class="form-control input-lg">
+                            </div>
+                            <div class="form-group">
+                                <label class="sr-only" for="amount">Enter credit amount</label>
+                                <div class="input-group">
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-usd"></span>
+                                    </span>
+                                    <input type="text" placeholder="Enter amount" name="amount" value="3.4" id="amount" class="form-control input-lg">
+                                </div>
+                            </div>
+
+                            <input type="hidden" id="credit" name="credit" value="false">
+                            <button type="submit" class="btn btn-lg btn-success pull-right">Debit</button>
+                        }
+                    } else {
+                        <p class="lead text-info">Debit from account is available when balance is above A$3.</p>
+                    }
+
+                    <hr/>
+
                     @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "clearfix", 'role -> "form") {
-                        <h4>Debit from account</h4>
+                        <h4>Credit into account</h4>
                         @transactionForm.errors.map { error =>
                             <p class="alert alert-danger">
                                 <span class="glyphicon glyphicon-remove-sign"></span> @error.message
                             </p>
                         }
                         <div class="form-group">
-                            <label class="sr-only" for="notes">Transaction notes</label>
-                            <input type="text" placeholder="Transaction notes" name="notes" id="notes" class="form-control input-lg">
-                        </div>
-                        <div class="form-group">
                             <label class="sr-only" for="amount">Enter credit amount</label>
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <span class="glyphicon glyphicon-usd"></span>
                                 </span>
-                                <input type="text" placeholder="Enter amount" name="amount" value="3.4" id="amount" class="form-control input-lg">
+                                <input type="text" placeholder="Enter amount" name="amount" value="25.00" id="amount" class="form-control input-lg">
                             </div>
                         </div>
-
-                        <input type="hidden" id="credit" name="credit" value="false">
-                        <button type="submit" class="btn btn-lg btn-success pull-right">Debit</button>
+                        <input type="hidden" id="notes" name="notes" value="">
+                        <input type="hidden" id="credit" name="credit" value="true">
+                        <button type="submit" class="btn btn-lg btn-warning pull-right">Credit</button>
                     }
-                } else {
-                    <p class="lead text-info">Debit from account is available when balance is above A$3.</p>
-                }
-
-                <hr/>
-
-                @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "clearfix", 'role -> "form") {
-                    <h4>Credit into account</h4>
-                    @transactionForm.errors.map { error =>
-                        <p class="alert alert-danger">
-                            <span class="glyphicon glyphicon-remove-sign"></span> @error.message
-                        </p>
-                    }
-                    <div class="form-group">
-                        <label class="sr-only" for="amount">Enter credit amount</label>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-usd"></span>
-                            </span>
-                            <input type="text" placeholder="Enter amount" name="amount" value="25.00" id="amount" class="form-control input-lg">
-                        </div>
-                    </div>
-                    <input type="hidden" id="notes" name="notes" value="">
-                    <input type="hidden" id="credit" name="credit" value="true">
-                    <button type="submit" class="btn btn-lg btn-warning pull-right">Credit</button>
-                }
+                </div>
             </div>
         </div>
-    </div>
 
-}
+    }

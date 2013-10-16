@@ -10,9 +10,9 @@
                 @helper.form(action = helper.CSRF(routes.Application.search), 'class -> "search-form form-inline clearfix", 'role -> "form") {
                     <div class="input-group">
                         <label class="sr-only" for="term">Enter customer name</label>
-                        <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control input-lg" autocomplete="off">
+                        <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control" autocomplete="off">
                         <span class="input-group-btn">
-                            <button type="submit" class="btn btn-lg btn-primary">
+                            <button type="submit" class="btn btn-primary">
                                 Search
                             </button>
                         </span>
@@ -29,11 +29,16 @@
                 @if(!results.isEmpty) {
                     <ul class="list-inline">
                     @for((client, idx) <- results.zipWithIndex) {
-                        <li class="client col-sm-6">
+                        <li class="client col-xs-12 col-sm-6">
                             <a href="/clients/@client.id" class="well well-sm clearfix">
                                 <div class="info">
                                     <p class="name">@client.name</p>
-                                    <div class="balance @balance(client.balance)">Balance of @formatNumber(client.balance)</div>
+                                    <p class="balance @balance(client.balance)">Balance of @formatNumber(client.balance)</p>
+                                    @if(isBirthday(client.dob)) {
+                                        <div class="text-primary">
+                                            <span class="glyphicon glyphicon-gift"></span> Birthday time!
+                                        </div>
+                                    }
                                 </div>
                             </a>
                         </li>

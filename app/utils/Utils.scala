@@ -11,6 +11,16 @@ object Utils {
 
   def formatDateTime(dateTime: DateTime) = new SimpleDateFormat("dd MMM h:mm a").format(dateTime.toDate)
 
+  def isBirthday(birthDate: LocalDate): Boolean = {
+    if (birthDate == null) false
+
+    val sdf = new SimpleDateFormat("ddMM")
+    val now = sdf.format(LocalDate.now.toDate)
+    val birth = sdf.format(birthDate.toDate)
+
+    now == birth
+  }
+
 }
 
 object AnormExtension {
@@ -28,6 +38,12 @@ object AnormExtension {
       }
   }
 
+  implicit val dateTimeToStatement = new ToStatement[DateTime] {
+    def set(s: java.sql.PreparedStatement, index: Int, aValue: DateTime): Unit = {
+      s.setTimestamp(index, new java.sql.Timestamp(aValue.withMillisOfSecond(0).getMillis()))
+    }
+  }
+
   implicit def rowToLocalDate: Column[LocalDate] = Column.nonNull {
     (value, meta) =>
       val MetaDataItem(qualified, nullable, clazz) = meta
@@ -37,12 +53,6 @@ object AnormExtension {
         case str: java.lang.String => Right(dateFormatGeneration.parseLocalDate(str))
         case _ => Left(TypeDoesNotMatch("Cannot convert " + value + ":" + value.asInstanceOf[AnyRef].getClass))
       }
-  }
-
-  implicit val dateTimeToStatement = new ToStatement[DateTime] {
-    def set(s: java.sql.PreparedStatement, index: Int, aValue: DateTime): Unit = {
-      s.setTimestamp(index, new java.sql.Timestamp(aValue.withMillisOfSecond(0).getMillis()))
-    }
   }
 
   implicit val localDateToStatement = new ToStatement[LocalDate] {
