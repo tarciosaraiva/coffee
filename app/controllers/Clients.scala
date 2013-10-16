@@ -1,7 +1,6 @@
 package controllers
 
 import play.api.mvc._
-import play.api.libs.json.Json
 import models._
 import org.joda.time._
 import play.api.data.Form
@@ -14,8 +13,7 @@ object Clients extends Controller {
 
   val transactionForm = Form(
     tuple(
-      "coffee" -> text,
-      "milk" -> text,
+      "notes" -> text,
       "amount" -> bigDecimal,
       "credit" -> boolean
     ))
@@ -26,8 +24,9 @@ object Clients extends Controller {
       .verifying("Initial balance must be greater than A$25.", {
       _.>=(BigDecimal(25))
     }),
-    "coffee" -> nonEmptyText,
-    "milk" -> nonEmptyText,
+    "email" -> text,
+    "twitter" -> text,
+    "dob" -> jodaLocalDate("dd-MM"),
     "addTransaction" -> boolean,
     "goToCustomerRecord" -> boolean
   ))
@@ -47,7 +46,8 @@ object Clients extends Controller {
         transactionForm.bindFromRequest.fold(
           formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(id).get, Transaction.allByClient(id))),
           trans => {
-            Transaction.create(Transaction(DateTime.now, trans._4, trans._3, trans._1, trans._2, id))
+            val amount = if (trans._3) trans._2 else trans._2.unary_-
+            Transaction.create(Transaction(DateTime.now, trans._3, amount, trans._1, id))
             Client.updateBalance(id)
             Redirect(routes.Clients.show(id)).flashing(("success", "Transaction added successfully."))
           }
@@ -64,30 +64,24 @@ object Clients extends Controller {
           },
           client => {
             // add the client
-            val newClientId = Client.create(Client(Id(1), client._1, BigDecimal(0), client._3, client._4)).get
+            val newClientId = Client.create(Client(Id(1), client._1, BigDecimal(0), client._3, client._4, client._5)).get
 
             // add two transactions, one for the top-up
-            Transaction.create(Transaction(DateTime.now, true, client._2, "", "", newClientId))
+            Transaction.create(Transaction(DateTime.now, true, client._2, "", newClientId))
 
             // and the other for the coffee
-            if (client._5)
-              Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), client._3, client._4, newClientId))
+            if (client._6)
+              Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), "Coffee", newClientId))
 
             // and then updates the client
             Client.updateBalance(newClientId)
 
-            if (client._6)
+            if (client._7)
               Redirect(routes.Clients.show(newClientId))
             else
               Redirect(routes.Application.home).flashing(("success", "Client created successfully."))
           })
     }
   }
-
-//  def all = Action {
-//    Ok(Json.toJson(Client.all.map {
-//      c => c.toJson
-//    }))
-//  }
 
 }

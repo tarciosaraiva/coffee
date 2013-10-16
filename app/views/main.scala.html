@@ -1,8 +1,5 @@
 @(content: Html)(implicit token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
 
-@import models.Enums.coffees
-@import models.Enums.milks
-
 <!DOCTYPE html>
 
 <html>
@@ -30,7 +27,7 @@
                     </div>
                 </div>
                 <div class="col-sm-10">
-                    @content
+                @content
                 </div>
             </div>
         </div>
@@ -46,27 +43,43 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label class="sr-only" for="amount">Enter customer first and last names only</label>
-                        <input type="text" placeholder="Enter customer first and last names" name="name" id="name" class="form-control input-lg">
+                        <input type="text" placeholder="Enter customer first and last names" name="name" id="name" class="form-control">
                     </div>
                     <div class="form-group">
                         <label class="sr-only" for="amount">Enter initial balance</label>
                         <div class="input-group">
-                            <span class="input-group-addon">$</span>
-                            <input type="text" placeholder="Enter initial balance" name="balance" value="25" id="balance" class="form-control input-lg">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-usd"></span>
+                            </span>
+                            <input type="text" placeholder="Enter initial balance" name="balance" value="25" id="balance" class="form-control">
                         </div>
                     </div>
                     <div class="form-group">
-                        <select id="coffee" name="coffee" class="form-control input-lg">
-                        @coffees.map { c =>
-                            <option value="@c">@c</option>
-                        }
-                        </select>
-                        <br/>
-                        <select id="milk" name="milk" class="form-control input-lg">
-                        @milks.map { m =>
-                            <option value="@m">@m</option>
-                        }
-                        </select>
+                        <label class="sr-only" for="amount">Enter email</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-envelope"></span>
+                            </span>
+                            <input type="email" placeholder="Enter email" name="email" id="email" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="amount">Enter date of birth</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                            <input type="text" placeholder="Enter date of birth (dd-MM)" name="dob" id="dob" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="sr-only" for="amount">Enter twitter handle</label>
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <img src="@routes.Assets.at("images/twitter-small.png")"/>
+                            </span>
+                            <input type="text" placeholder="Enter twitter handle" name="twitter" id="twitter" class="form-control">
+                        </div>
                     </div>
                     <div class="checkbox">
                         <label>
@@ -83,14 +96,14 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary btn-lg">Save customer</button>
+                    <button type="submit" class="btn btn-primary">Save customer</button>
                 </div>
             }
             </div> <!-- /.modal-dialog -->
         </div> <!-- /.modal -->
     </body>
 
-        <!-- Google Analytics -->
+    <!-- Google Analytics -->
     <script>
     ( function ( i, s, o, g, r, a, m ) { i[ 'GoogleAnalyticsObject' ] = r ; i[ r ] = i[ r ] || function ( ) {
     ( i[ r ].q = i[ r ].q ||[ ] ).push ( arguments ) }, i[ r ].l = 1 * new Date ( ) ; a = s.createElement ( o ),

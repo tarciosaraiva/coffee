@@ -9,8 +9,24 @@ import anorm.SqlParser._
 import scala._
 import anorm.~
 import scala.language.postfixOps
+import play.api.libs.json.{Json, JsValue, Writes}
 
-case class Transaction(transactionDate: DateTime, credit: Boolean, amount: BigDecimal, coffeeType: String, milkType: String, client: Long)
+case class Transaction(transactionDate: DateTime, credit: Boolean, amount: BigDecimal, notes: String, client: Long) {
+
+  val transactionWrites = new Writes[Transaction] {
+    def writes(t: Transaction): JsValue = Json.obj(
+      "date" -> t.transactionDate,
+      "credit" -> t.credit,
+      "amount" -> t.amount,
+      "notes" -> t.notes
+    )
+  }
+
+  def toJson = {
+    transactionWrites.writes(this)
+  }
+
+}
 
 object Transaction {
 
@@ -18,10 +34,9 @@ object Transaction {
     get[DateTime]("transaction.transaction_date") ~
       get[Boolean]("transaction.credit") ~
       get[java.math.BigDecimal]("transaction.amount") ~
-      get[String]("transaction.coffee_type") ~
-      get[String]("transaction.milk_type") ~
+      get[String]("transaction.notes") ~
       get[Long]("transaction.client_id") map {
-      case transactionDate ~ credit ~ amount ~ coffeeType ~ milkType ~ client => Transaction(transactionDate, credit, BigDecimal(amount), coffeeType, milkType, client)
+      case transactionDate ~ credit ~ amount ~ notes ~ client => Transaction(transactionDate, credit, BigDecimal(amount), notes, client)
     }
   }
 
@@ -39,13 +54,12 @@ object Transaction {
       implicit connection =>
         SQL(
           """
-          insert into `transaction` values (current_timestamp, {credit}, {amount}, {coffeeType}, {milkType}, {clientId})
+          insert into `transaction` values (current_timestamp, {credit}, {amount}, {clientId}, {notes})
           """
         ).on(
           'credit -> transaction.credit,
           'amount -> transaction.amount.doubleValue(),
-          'coffeeType -> transaction.coffeeType,
-          'milkType -> transaction.milkType,
+          'notes -> transaction.notes,
           'clientId -> transaction.client
         ).executeInsert()
     }

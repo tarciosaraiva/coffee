@@ -1,5 +1,6 @@
 package models
 
+import utils.AnormExtension._
 import play.api.db._
 import play.api.Play.current
 
@@ -7,16 +8,18 @@ import anorm._
 import anorm.SqlParser._
 
 import scala.language.postfixOps
-import play.api.libs.json.{Json, JsValue, Writes}
+import play.api.libs.json._
+import org.joda.time._
 
-case class Client(id: Pk[Long], name: String, balance: BigDecimal, coffeeType: String, milkType: String) {
+case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: String, twitter: String, dob: LocalDate) {
 
   val clientWrites = new Writes[Client] {
     def writes(c: Client): JsValue = Json.obj(
       "name" -> c.name,
       "balance" -> c.balance,
-      "coffee" -> c.coffeeType,
-      "milk" -> c.milkType
+      "email" -> c.email,
+      "twitter" -> c.twitter,
+      "dob" -> c.dob
     )
   }
 
@@ -32,17 +35,10 @@ object Client {
     get[Pk[Long]]("client.id") ~
       get[String]("name") ~
       get[java.math.BigDecimal]("client.balance") ~
-      get[String]("client.coffee_type") ~
-      get[String]("client.milk_type") map {
-      case id ~ name ~ balance ~ coffeeType ~ milkType => Client(id, name, BigDecimal(balance), coffeeType, milkType)
-    }
-  }
-
-  def all: Seq[Client] = {
-    DB.withConnection {
-      implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, coffee_type, milk_type " +
-          "from client order by 1").as(Client.simple *)
+      get[String]("client.email") ~
+      get[String]("client.twitter") ~
+      get[LocalDate]("client.dob") map {
+      case id ~ name ~ balance ~ email ~ twitter ~ dob => Client(id, name, BigDecimal(balance), email, twitter, dob)
     }
   }
 
@@ -56,7 +52,7 @@ object Client {
   def indexes(index: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) as `name`, balance, coffee_type, milk_type " +
+        SQL("select id, concat(first_name, ' ', last_name) as `name`, balance, email, twitter, dob " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> index.concat("%"))
           .as(Client.simple *)
@@ -66,7 +62,7 @@ object Client {
   def findByName(name: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, coffee_type, milk_type " +
+        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, email, twitter, dob " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> "%".concat(name).concat("%"))
           .as(Client.simple *)
@@ -76,7 +72,7 @@ object Client {
   def findOne(id: Long): Option[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, coffee_type, milk_type " +
+        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, email, twitter, dob " +
           "from client where id = {id}")
           .on('id -> id)
           .as(Client.simple.singleOpt)
@@ -98,15 +94,16 @@ object Client {
         val splitName = client.name.split(" ")
         SQL(
           """
-          insert into `client`(`first_name`, `last_name`, `balance`, `coffee_type`, `milk_type`)
-          values ({first_name}, {last_name}, {credit}, {coffeeType}, {milkType})
+          insert into `client`(`first_name`, `last_name`, `balance`, `email`, `twitter`, `dob`)
+          values ({first_name}, {last_name}, {credit}, {email}, {twitter}, {dob})
           """
         ).on(
           'first_name -> splitName(0),
           'last_name -> splitName(1),
           'credit -> client.balance.doubleValue(),
-          'coffeeType -> client.coffeeType,
-          'milkType -> client.milkType
+          'email -> client.email,
+          'twitter -> "@".concat(client.twitter),
+          'dob -> client.dob
         ).executeInsert()
     }
   }

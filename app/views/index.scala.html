@@ -1,77 +1,71 @@
 @(form: Form[(String)], indexes: Seq[String], results: Seq[Client])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
 
-@import java.text.NumberFormat
+    @import utils.Utils._
+    @import tags._
 
-    @currency(amount: BigDecimal) = @{
-        NumberFormat.getCurrencyInstance.format(amount)
-    }
-    @balance(amount: BigDecimal) = @{
-        if(amount.<(BigDecimal(0))) "text-danger" else if(amount.<(BigDecimal(4))) "text-warning" else "text-info"
-    }
-
-@main {
-    <div class="row">
-        <div class="col-sm-9">
-            <h2>Find coffee addict</h2>
-            @helper.form(action = helper.CSRF(routes.Application.search), 'class -> "search-form form-inline clearfix", 'role -> "form") {
-                <div class="input-group">
-                    <label class="sr-only" for="term">Enter customer name</label>
-                    <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control input-lg" autocomplete="off">
-                    <span class="input-group-btn">
-                        <button type="submit" class="btn btn-lg btn-primary">
-                            Search
-                        </button>
-                    </span>
-                </div>
-            }
-            <hr/>
-
-            @flash.get("success").map { message =>
-                <div class="alert alert-success">
-                    <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
-                </div>
-            }
-
-            @if(!results.isEmpty) {
-                <ul class="list-inline">
-                @for((client, idx) <- results.zipWithIndex) {
-                    <li class="client col-sm-6">
-                        <a href="/clients/@client.id" class="well well-sm clearfix">
-                            <div class="info">
-                                <p class="name">@client.name</p>
-                                <p class="balance @balance(client.balance)">Balance of @currency(client.balance)</p>
-                                <div class="fave">Likes <strong>@client.coffeeType</strong>
-                                    with <strong>@client.milkType</strong> milk.</div>
-                            </div>
-                        </a>
-                    </li>
-                }
-                </ul>
-            } else {
-                @if(form.hasErrors) {
-                    @form.errors.map { error =>
-                        <div class="alert alert-danger">
-                            <span class="glyphicon glyphicon-remove-sign"></span> <strong>Heads up!</strong> @error.message
-                        </div>
-                    }
-                } else {
-                    <div class="alert alert-warning">
-                        <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Nothing to show yet.</strong> Try searching or tapping on the index to the right.
+    @main {
+        <div class="row">
+            <div class="col-sm-9">
+                <h2>Find coffee addict</h2>
+                @helper.form(action = helper.CSRF(routes.Application.search), 'class -> "search-form form-inline clearfix", 'role -> "form") {
+                    <div class="input-group">
+                        <label class="sr-only" for="term">Enter customer name</label>
+                        <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control input-lg" autocomplete="off">
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-lg btn-primary">
+                                Search
+                            </button>
+                        </span>
                     </div>
                 }
-            }
-        </div>
-        <div class="col-sm-3">
-            <h3>Name index</h3>
-            <div class="well well-sm">
-                <ul class="name-index list-inline">
-                @indexes.map { idx =>
-                    <li>
-                        <a href="/index/@idx" class="btn btn-default btn-lg btn-idx">@idx</a>
-                    </li>
+                <hr/>
+
+                @flash.get("success").map { message =>
+                    <div class="alert alert-success">
+                        <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
+                    </div>
                 }
-                </ul>
+
+                @if(!results.isEmpty) {
+                    <ul class="list-inline">
+                    @for((client, idx) <- results.zipWithIndex) {
+                        <li class="client col-sm-6">
+                            <a href="/clients/@client.id" class="well well-sm clearfix">
+                                <div class="info">
+                                    <p class="name">@client.name</p>
+                                    <div class="balance @balance(client.balance)">Balance of @formatNumber(client.balance)</div>
+                                </div>
+                            </a>
+                        </li>
+                    }
+                    </ul>
+                } else {
+                    @if(form.hasErrors) {
+                        @form.errors.map { error =>
+                            <div class="alert alert-danger">
+                                <span class="glyphicon glyphicon-remove-sign"></span> <strong>
+                                Heads up!</strong> @error.message
+                            </div>
+                        }
+                    } else {
+                        <div class="alert alert-warning">
+                            <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Nothing to show yet.</strong>
+                            Try searching or tapping on the index to the right.
+                        </div>
+                    }
+                }
+            </div>
+            <div class="col-sm-3">
+                <h3>Name index</h3>
+                <div class="well well-sm">
+                    <ul class="name-index list-inline">
+                    @indexes.map { idx =>
+                        <li>
+                            <a href="/index/@idx" class="btn btn-default btn-lg btn-idx">@idx</a>
+                        </li>
+                    }
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-}
+    }

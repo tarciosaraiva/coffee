@@ -15,9 +15,9 @@ POST        /clients/:id/transaction        controllers.Clients.transaction(id: 
 POST        /api/search                     controllers.Api.search
 GET         /api/index                      controllers.Api.indexes
 GET         /api/index/:index               controllers.Api.index(index: String)
-# POST        /api/clients
-# GET         /api/clients/:id
-# POST        /api/clients/:id/transaction
+GET         /api/clients/:id                controllers.Api.client(id: Long)
+POST        /api/clients                    controllers.Api.addClient
+POST        /api/clients/:id/transaction    controllers.Api.addTransaction(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET         /assets/*file                   controllers.Assets.at(path="/public", file)

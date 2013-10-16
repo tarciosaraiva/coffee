@@ -1,0 +1,5 @@
+@(amount: BigDecimal) {
+    @{
+        if(amount.<(BigDecimal(0))) "text-danger" else if(amount.<(BigDecimal(5))) "text-warning" else "text-info"
+    }
+}
