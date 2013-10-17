@@ -26,6 +26,12 @@
                     </div>
                 }
 
+                @flash.get("error").map { message =>
+                    <div class="alert alert-danger">
+                        <span class="glyphicon glyphicon-danger-sign"></span> <strong>Uh oh!</strong> @message
+                    </div>
+                }
+
                 @if(!results.isEmpty) {
                     <ul class="list-inline">
                     @for((client, idx) <- results.zipWithIndex) {
