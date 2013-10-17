@@ -1,6 +1,5 @@
 package models
 
-import utils.AnormExtension._
 import play.api.db._
 import play.api.Play.current
 
@@ -10,8 +9,9 @@ import anorm.SqlParser._
 import scala.language.postfixOps
 import play.api.libs.json._
 import org.joda.time._
+import utils.AnormExtension._
 
-case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: String, twitter: String, dob: LocalDate) {
+case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: Option[String], twitter: Option[String], dob: Option[LocalDate]) {
 
   val clientWrites = new Writes[Client] {
     def writes(c: Client): JsValue = Json.obj(
@@ -35,9 +35,9 @@ object Client {
     get[Pk[Long]]("client.id") ~
       get[String]("name") ~
       get[java.math.BigDecimal]("client.balance") ~
-      get[String]("client.email") ~
-      get[String]("client.twitter") ~
-      get[LocalDate]("client.dob") map {
+      get[Option[String]]("client.email") ~
+      get[Option[String]]("client.twitter") ~
+      get[Option[LocalDate]]("client.dob") map {
       case id ~ name ~ balance ~ email ~ twitter ~ dob => Client(id, name, BigDecimal(balance), email, twitter, dob)
     }
   }
@@ -102,7 +102,7 @@ object Client {
           'last_name -> splitName(1),
           'credit -> client.balance.doubleValue(),
           'email -> client.email,
-          'twitter -> "@".concat(client.twitter),
+          'twitter -> client.twitter,
           'dob -> client.dob
         ).executeInsert()
     }

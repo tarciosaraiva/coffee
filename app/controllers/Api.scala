@@ -14,15 +14,15 @@ object Api extends Controller {
   implicit val addClientReads = (
     (__ \ 'name).read[String] and
       (__ \ 'balance).read[BigDecimal] and
-      (__ \ 'email).read[String] and
-      (__ \ 'twitter).read[String] and
-      (__ \ 'dob).read[LocalDate] and
+      (__ \ 'email).read[Option[String]] and
+      (__ \ 'twitter).read[Option[String]] and
+      (__ \ 'dob).read[Option[LocalDate]] and
       (__ \ 'addTransaction).read[Boolean]
     ) tupled
 
   implicit val addTransactionReads = (
     (__ \ 'amount).read[BigDecimal] and
-      (__ \ 'notes).read[String] and
+      (__ \ 'notes).read[Option[String]] and
       (__ \ 'credit).read[Boolean]
     ) tupled
 
@@ -59,17 +59,17 @@ object Api extends Controller {
 
   def addClient = Action(parse.json) {
     request =>
-      request.body.validate[(String, BigDecimal, String, String, LocalDate, Boolean)].map {
+      request.body.validate[(String, BigDecimal, Option[String], Option[String], Option[LocalDate], Boolean)].map {
         case (name, balance, email, twitter, dob, addTransaction) => {
           // add the client
           val newClientId = Client.create(Client(Id(1), name, BigDecimal(0), email, twitter, dob)).get
 
           // add two transactions, one for the top-up
-          Transaction.create(Transaction(DateTime.now, true, balance, "", newClientId))
+          Transaction.create(Transaction(DateTime.now, true, balance, null, newClientId))
 
           // and the other for the coffee
           if (addTransaction)
-            Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), "Coffee", newClientId))
+            Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), Option.apply("Coffee"), newClientId))
 
           // and then updates the client
           Client.updateBalance(newClientId)
@@ -83,7 +83,7 @@ object Api extends Controller {
 
   def addTransaction(id: Long) = Action(parse.json) {
     request =>
-      request.body.validate[(BigDecimal, String, Boolean)].map {
+      request.body.validate[(BigDecimal, Option[String], Boolean)].map {
         case (amount, notes, credit) => {
           Transaction.create(Transaction(DateTime.now, credit, amount, notes, id))
           Client.updateBalance(id)

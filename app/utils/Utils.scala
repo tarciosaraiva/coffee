@@ -11,12 +11,12 @@ object Utils {
 
   def formatDateTime(dateTime: DateTime) = new SimpleDateFormat("dd MMM h:mm a").format(dateTime.toDate)
 
-  def isBirthday(birthDate: LocalDate): Boolean = {
-    if (birthDate == null) false
+  def isBirthday(birthDate: Option[LocalDate]): Boolean = {
+    if (birthDate.isEmpty) return false
 
     val sdf = new SimpleDateFormat("ddMM")
     val now = sdf.format(LocalDate.now.toDate)
-    val birth = sdf.format(birthDate.toDate)
+    val birth = sdf.format(birthDate.get.toDate)
 
     now == birth
   }

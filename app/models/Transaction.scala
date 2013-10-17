@@ -11,7 +11,7 @@ import anorm.~
 import scala.language.postfixOps
 import play.api.libs.json.{Json, JsValue, Writes}
 
-case class Transaction(transactionDate: DateTime, credit: Boolean, amount: BigDecimal, notes: String, client: Long) {
+case class Transaction(transactionDate: DateTime, credit: Boolean, amount: BigDecimal, notes: Option[String], client: Long) {
 
   val transactionWrites = new Writes[Transaction] {
     def writes(t: Transaction): JsValue = Json.obj(
@@ -34,7 +34,7 @@ object Transaction {
     get[DateTime]("transaction.transaction_date") ~
       get[Boolean]("transaction.credit") ~
       get[java.math.BigDecimal]("transaction.amount") ~
-      get[String]("transaction.notes") ~
+      get[Option[String]]("transaction.notes") ~
       get[Long]("transaction.client_id") map {
       case transactionDate ~ credit ~ amount ~ notes ~ client => Transaction(transactionDate, credit, BigDecimal(amount), notes, client)
     }
