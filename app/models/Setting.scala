@@ -55,7 +55,7 @@ object Setting {
       implicit connection =>
         SQL(
           """
-          insert into `setting`(`key`, `value`) values ({key}, {value})
+          insert into setting(key, value) values ({key}, {value})
           """
         ).on(
           'key -> setting.key,
@@ -69,7 +69,7 @@ object Setting {
       implicit connection =>
         SQL(
           """
-          update `setting` set `key` = {key}, `value` = {value} where id = {id}
+          update setting set key = {key}, value = {value} where id = {id}
           """
         ).on(
           'key -> setting.key,
@@ -82,7 +82,7 @@ object Setting {
   def delete(id: Long): Int = {
     DB.withConnection {
       implicit connection =>
-        SQL("delete from `setting` where id = {id}").on('id -> id).executeUpdate()
+        SQL("delete from setting where id = {id}").on('id -> id).executeUpdate()
     }
   }
 

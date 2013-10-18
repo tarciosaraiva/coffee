@@ -1,17 +1,51 @@
-# Client schema
+-- Table: client
 
 # --- !Ups
 
-CREATE TABLE `client` (
-  `id`          INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `first_name`  VARCHAR(255)     NOT NULL,
-  `last_name`   VARCHAR(255),
-  `balance`     DECIMAL(10, 2),
-  `coffee_type` VARCHAR(50),
-  `milk_type`   VARCHAR(50),
-  PRIMARY KEY (`id`)
+CREATE TABLE client
+(
+  id         SERIAL                 NOT NULL,
+  first_name CHARACTER VARYING(255) NOT NULL,
+  last_name  CHARACTER VARYING(255),
+  balance    NUMERIC(10, 2),
+  email      CHARACTER VARYING(255),
+  twitter    CHARACTER VARYING(255),
+  dob        DATE,
+  CONSTRAINT pk_client PRIMARY KEY (id)
+) WITH (OIDS = FALSE);
+
+CREATE INDEX idx_client_name ON client (first_name ASC NULLS LAST);
+
+CREATE TABLE transaction
+(
+  id               SERIAL                      NOT NULL,
+  transaction_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  credit           BOOLEAN                     NOT NULL,
+  amount           NUMERIC(10, 2)              NOT NULL,
+  notes            CHARACTER VARYING(255),
+  client_id        BIGINT,
+  CONSTRAINT fk_transaction_client FOREIGN KEY (client_id)
+  REFERENCES client (id) MATCH SIMPLE
+  ON UPDATE NO ACTION ON DELETE CASCADE
+) WITH (OIDS = FALSE);
+
+CREATE INDEX idx_transaction_date ON transaction (transaction_date ASC NULLS LAST);
+
+CREATE TABLE setting (
+  id    SERIAL                 NOT NULL,
+  key   CHARACTER VARYING(255) NOT NULL,
+  value TEXT                   NOT NULL,
+  CONSTRAINT pk_setting PRIMARY KEY (id)
 );
+
+CREATE INDEX idx_setting_key ON setting (key ASC NULLS LAST);
 
 # --- !Downs
 
-DROP TABLE IF EXISTS `client`;
+-- DROP INDEX IF EXISTS idx_client_name;
+-- DROP INDEX IF EXISTS idx_transaction_date;
+-- DROP INDEX IF EXISTS idx_setting_key;
+
+DROP TABLE IF EXISTS transaction;
+DROP TABLE IF EXISTS client;
+DROP TABLE IF EXISTS setting;

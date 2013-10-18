@@ -52,7 +52,7 @@ object Client {
   def indexes(index: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) as `name`, balance, email, twitter, dob " +
+        SQL("select id, concat(first_name, ' ', last_name) as name, balance, email, twitter, dob " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> index.concat("%"))
           .as(Client.simple *)
@@ -62,7 +62,7 @@ object Client {
   def findByName(name: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, email, twitter, dob " +
+        SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> "%".concat(name).concat("%"))
           .as(Client.simple *)
@@ -72,7 +72,7 @@ object Client {
   def findOne(id: Long): Option[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) AS `name`, balance, email, twitter, dob " +
+        SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob " +
           "from client where id = {id}")
           .on('id -> id)
           .as(Client.simple.singleOpt)
@@ -94,7 +94,7 @@ object Client {
         val splitName = client.name.split(" ")
         SQL(
           """
-          insert into `client`(`first_name`, `last_name`, `balance`, `email`, `twitter`, `dob`)
+          insert into client(first_name, last_name, balance, email, twitter, dob)
           values ({first_name}, {last_name}, {credit}, {email}, {twitter}, {dob})
           """
         ).on(

@@ -54,7 +54,8 @@ object Transaction {
       implicit connection =>
         SQL(
           """
-          insert into `transaction` values (current_timestamp, {credit}, {amount}, {clientId}, {notes})
+          insert into transaction (transaction_date, credit, amount, notes, client_id)
+          values (now(), {credit}, {amount}, {notes}, {clientId})
           """
         ).on(
           'credit -> transaction.credit,

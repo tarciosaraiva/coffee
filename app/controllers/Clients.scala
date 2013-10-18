@@ -71,12 +71,14 @@ object Clients extends Controller {
                 client._5)
             ).get
 
+            val currentTime = DateTime.now
+
             // add two transactions, one for the top-up
-            Transaction.create(Transaction(DateTime.now, true, client._2, Option.apply(null), newClientId))
+            Transaction.create(Transaction(currentTime, true, client._2, Option.apply(null), newClientId))
 
             // and the other for the coffee
             if (client._6)
-              Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), Option.apply("Coffee"), newClientId))
+              Transaction.create(Transaction(currentTime, false, BigDecimal(-3.4), Option.apply("Coffee"), newClientId))
 
             // and then updates the client
             Client.updateBalance(newClientId)
