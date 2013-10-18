@@ -42,10 +42,6 @@ CREATE INDEX idx_setting_key ON setting (key ASC NULLS LAST);
 
 # --- !Downs
 
--- DROP INDEX IF EXISTS idx_client_name;
--- DROP INDEX IF EXISTS idx_transaction_date;
--- DROP INDEX IF EXISTS idx_setting_key;
-
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS client;
 DROP TABLE IF EXISTS setting;
