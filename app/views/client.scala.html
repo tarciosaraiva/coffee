@@ -40,7 +40,11 @@
                     @transactions.map { t =>
                         <tr>
                             <td>@formatDateTime(t.transactionDate)</td>
-                            <td>@formatNumber(t.amount)</td>
+                            @if(t.amount.<(BigDecimal(0))) {
+                                <td class="text-danger">@formatNumber(t.amount)</td>
+                            } else {
+                                <td>@formatNumber(t.amount)</td>
+                            }
                             <td>@t.notes</td>
                         </tr>
                     }
