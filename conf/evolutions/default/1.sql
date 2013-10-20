@@ -12,23 +12,22 @@ CREATE TABLE client
   twitter    CHARACTER VARYING(255),
   dob        DATE,
   CONSTRAINT pk_client PRIMARY KEY (id)
-) WITH (OIDS = FALSE);
+);
 
 CREATE INDEX idx_client_name ON client (first_name ASC NULLS LAST);
 
 CREATE TABLE transaction
 (
-  id               SERIAL                      NOT NULL,
-  transaction_date TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-  credit           BOOLEAN                     NOT NULL,
-  amount           NUMERIC(10, 2)              NOT NULL,
+  id               SERIAL         NOT NULL,
+  transaction_date TIMESTAMP      NOT NULL,
+  credit           BOOLEAN        NOT NULL,
+  amount           NUMERIC(10, 2) NOT NULL,
   notes            CHARACTER VARYING(255),
   client_id        BIGINT,
   CONSTRAINT pk_transaction PRIMARY KEY (id),
   CONSTRAINT fk_transaction_client FOREIGN KEY (client_id)
-  REFERENCES client (id) MATCH SIMPLE
-  ON UPDATE NO ACTION ON DELETE CASCADE
-) WITH (OIDS = FALSE);
+  REFERENCES client (id)
+);
 
 CREATE INDEX idx_transaction_date ON transaction (transaction_date ASC NULLS LAST);
 
