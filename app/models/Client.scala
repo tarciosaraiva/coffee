@@ -99,7 +99,9 @@ object Client {
           """
         ).on(
           'first_name -> splitName(0),
-          'last_name -> splitName(1),
+          'last_name -> {
+            if (splitName.length == 2) splitName(1) else ""
+          },
           'credit -> client.balance.doubleValue(),
           'email -> client.email,
           'twitter -> client.twitter,
