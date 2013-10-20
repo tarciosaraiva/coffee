@@ -24,6 +24,7 @@ CREATE TABLE transaction
   amount           NUMERIC(10, 2)              NOT NULL,
   notes            CHARACTER VARYING(255),
   client_id        BIGINT,
+  CONSTRAINT pk_transaction PRIMARY KEY (id),
   CONSTRAINT fk_transaction_client FOREIGN KEY (client_id)
   REFERENCES client (id) MATCH SIMPLE
   ON UPDATE NO ACTION ON DELETE CASCADE
