@@ -1,82 +1,121 @@
 @(form: Form[(String)], indexes: Seq[String], results: Seq[Client])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
 
-    @import utils.Utils._
-    @import tags._
+@import utils.Utils._
+@import tags._
 
-    @main {
-        <div class="row">
-            <div class="col-sm-9">
-                <h2>Find coffee addict</h2>
-                @helper.form(action = helper.CSRF(routes.Application.search), 'class -> "search-form form-inline clearfix", 'role -> "form") {
-                    <div class="input-group">
-                        <label class="sr-only" for="term">Enter customer name</label>
-                        <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control" autocomplete="off">
-                        <span class="input-group-btn">
-                            <button type="submit" class="btn btn-primary">
-                                Search
-                            </button>
-                        </span>
-                    </div>
-                }
-                <hr/>
+@main {
+    <div class="row">
+        <div class="col-sm-9">
+            <h2>Find coffee addict</h2>
+            @helper.form(action = helper.CSRF(routes.Application.search), 'class -> "search-form form-inline clearfix", 'role -> "form") {
+                <div class="input-group">
+                    <label class="sr-only" for="term">Enter customer name</label>
+                    <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control" autocomplete="off">
+                    <span class="input-group-btn">
+                        <button type="submit" class="btn btn-primary">
+                            Search
+                        </button>
+                    </span>
+                </div>
+            }
+            <hr/>
 
-                @flash.get("success").map { message =>
-                    <div class="alert alert-success">
-                        <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
-                    </div>
-                }
+            @flash.get("success").map { message =>
+                <div class="alert alert-success">
+                    <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
+                </div>
+            }
 
-                @flash.get("error").map { message =>
-                    <div class="alert alert-danger">
-                        <span class="glyphicon glyphicon-danger-sign"></span> <strong>Uh oh!</strong> @message
-                    </div>
-                }
+            @flash.get("error").map { message =>
+                <div class="alert alert-danger">
+                    <span class="glyphicon glyphicon-danger-sign"></span> <strong>Uh oh!</strong> @message
+                </div>
+            }
 
-                @if(!results.isEmpty) {
-                    <ul class="list-inline">
-                    @for((client, idx) <- results.zipWithIndex) {
-                        <li class="client col-xs-12 col-sm-6">
-                            <a href="/clients/@client.id" class="well well-sm clearfix">
-                                <div class="info">
-                                    <p class="name">@client.name</p>
-                                    <p class="balance @balance(client.balance)">Balance of @formatNumber(client.balance)</p>
-                                    @if(isBirthday(client.dob)) {
-                                        <div class="text-primary">
-                                            <span class="glyphicon glyphicon-gift"></span> Birthday time!
+            @if(!results.isEmpty) {
+                <ul class="list-inline">
+                @for((client, idx) <- results.zipWithIndex) {
+                    <li class="col-xs-12 col-sm-6">
+                        <div class="client panel panel-primary">
+                            <a href="/clients/@client.id" class="info panel-heading">
+                                <span class="name">@client.name</span>
+                                <span class="balance @balance(client.balance)">Balance of @formatNumber(client.balance)</span>
+                                @if(isBirthday(client.dob)) {
+                                    <div class="text-primary">
+                                        <span class="glyphicon glyphicon-gift"></span> Birthday time!
+                                    </div>
+                                }
+                            </a>
+                            <div class="action panel-body">
+                                <a href="#" data-toggle="collapse" data-target="#transaction-form-@client.id.get">
+                                    <span class="glyphicon glyphicon-plus-sign"></span> Add new transaction
+                                </a>
+                                @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "collapse clearfix", 'role -> "form", 'id -> "transaction-form-".concat(client.id.get.toString)) {
+                                    <div class="form-group">
+                                        <label class="sr-only" for="notes">Transaction notes</label>
+                                        <input type="text" placeholder="Transaction notes" name="notes" id="notes" class="form-control">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="sr-only" for="amount">Enter credit amount</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-usd"></span>
+                                            </span>
+                                            <input type="number" placeholder="Enter amount" name="amount" id="amount" class="form-control" step="any" autocomplete="off">
+                                            <span class="input-group-btn">
+                                                <button type="submit" class="btn btn-success pull-right">Submit</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    @if(client.balance.>(BigDecimal(3))) {
+                                        <div class="form-group">
+                                            <div class="checkbox">
+                                                <label>
+                                                    <input type="checkbox" id="credit" name="credit" value="true">
+                                                    This is a credit transaction
+                                                </label>
+                                            </div>
+                                        </div>
+                                    } else {
+                                        <div>
+                                            <span class="text-warning">
+                                                You can only add a credit transaction when balance is below A$3.</span>
+                                            <input type="hidden" id="credit" name="credit" value="true">
                                         </div>
                                     }
-                                </div>
-                            </a>
-                        </li>
-                    }
-                    </ul>
-                } else {
-                    @if(form.hasErrors) {
-                        @form.errors.map { error =>
-                            <div class="alert alert-danger">
-                                <span class="glyphicon glyphicon-remove-sign"></span> <strong>
-                                Heads up!</strong> @error.message
+                                }
                             </div>
-                        }
-                    } else {
-                        <div class="alert alert-warning">
-                            <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Nothing to show yet.</strong>
-                            Try searching or tapping on the index to the right.
+                        </div>
+                    </li>
+                }
+                </ul>
+            } else {
+                @if(form.hasErrors) {
+                    @form.errors.map { error =>
+                        <div class="alert alert-danger">
+                            <span class="glyphicon glyphicon-remove-sign"></span> <strong>
+                            Heads up!</strong> @error.message
                         </div>
                     }
+                } else {
+                    <div class="alert alert-warning">
+                        <span class="glyphicon glyphicon-exclamation-sign"></span> <strong>Nothing to show yet.</strong>
+                        Try searching or tapping on the index to the right.
+                    </div>
                 }
-            </div>
-            <div class="col-sm-3">
-                <h3>Name index</h3>
-                <div class="well well-sm">
-                    <ul class="name-index list-inline">
-                    @indexes.map { idx =>
-                        <li>
-                            <a href="/index/@idx" class="btn btn-default btn-lg btn-idx">@idx</a>
-                        </li>
-                    }
-                    </ul>
-                </div>
+            }
+        </div>
+        <div class="col-sm-3">
+            <h3>Name index</h3>
+            <div class="well well-sm">
+                <ul class="name-index list-inline">
+                @indexes.map { idx =>
+                    <li>
+                        <a href="/index/@idx" class="btn btn-default btn-lg btn-idx">@idx</a>
+                    </li>
+                }
+                </ul>
             </div>
         </div>
-    }
+    </div>
+}

@@ -46,7 +46,12 @@ object Clients extends Controller {
             val amount = if (trans._3) trans._2 else trans._2.unary_-
             Transaction.create(Transaction(DateTime.now, trans._3, amount, trans._1, id))
             Client.updateBalance(id)
-            Redirect(routes.Clients.show(id)).flashing(("success", "Transaction added successfully."))
+
+            if (request.headers("Referer").contains("clients")) {
+              Redirect(routes.Clients.show(id)).flashing(("success", "Transaction added successfully."))
+            } else {
+              Redirect(routes.Application.home).flashing(("success", "Transaction added successfully."))
+            }
           }
         )
     }
