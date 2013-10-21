@@ -2,22 +2,33 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET         /                               controllers.Application.home
-POST        /search                         controllers.Application.search
-GET         /index/:index                   controllers.Application.index(index: String)
+# Login
+GET           /login                              controllers.Application.login
+POST          /login                              controllers.Application.auth
 
-POST        /clients                        controllers.Clients.create
-GET         /clients/:id                    controllers.Clients.show(id: Long)
-POST        /clients/:id/transaction        controllers.Clients.transaction(id: Long)
+# Home page
+GET           /                                   controllers.Clients.home
+POST          /search                             controllers.Clients.search
+GET           /index/:index                       controllers.Clients.index(index: String)
+
+# Client record
+POST          /clients                            controllers.Clients.create
+GET           /clients/:id                        controllers.Clients.show(id: Long)
+POST          /clients/:id/transaction            controllers.Clients.transaction(id: Long)
+
+# Settings
+GET           /settings                           controllers.Settings.show
+POST          /settings                           controllers.Settings.create
+PUT           /settings/:id                       controllers.Settings.update(id: Long)
+DELETE        /settings/:id                       controllers.Settings.delete(id: Long)
 
 # API Calls
-POST        /api/search                     controllers.Api.search
-GET         /api/index                      controllers.Api.indexes
-GET         /api/index/:index               controllers.Api.index(index: String)
-GET         /api/clients/:id                controllers.Api.client(id: Long)
-POST        /api/clients                    controllers.Api.addClient
-POST        /api/clients/:id/transaction    controllers.Api.addTransaction(id: Long)
+POST          /api/search                         controllers.Api.search
+GET           /api/index                          controllers.Api.indexes
+GET           /api/index/:index                   controllers.Api.index(index: String)
+GET           /api/clients/:id                    controllers.Api.client(id: Long)
+POST          /api/clients                        controllers.Api.addClient
+POST          /api/clients/:id/transaction        controllers.Api.addTransaction(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET         /assets/*file                   controllers.Assets.at(path="/public", file)
+GET           /assets/*file                       controllers.Assets.at(path="/public", file)
