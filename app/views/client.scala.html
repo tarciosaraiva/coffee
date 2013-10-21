@@ -1,4 +1,4 @@
-@(transactionForm: Form[(Option[String], BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
+@(transactionForm: Form[(Option[String], BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash, settings: Seq[Setting])
 @import utils.Utils._
 @import tags._
 @main {
@@ -55,7 +55,7 @@
         <div class="col-sm-4">
             <div class="well">
                 @if(client.balance.>(BigDecimal(3))) {
-                    @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "clearfix", 'role -> "form") {
+                    @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "clearfix", 'role -> "form") {
                         <h4>Debit from account</h4>
 
                         @transactionForm.errors.map { error =>
@@ -87,7 +87,7 @@
 
                 <hr/>
 
-                @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "clearfix", 'role -> "form") {
+                @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "clearfix", 'role -> "form") {
                     <h4>Credit into account</h4>
 
                     @transactionForm.errors.map { error =>

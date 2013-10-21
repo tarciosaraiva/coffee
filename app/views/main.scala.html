@@ -1,4 +1,4 @@
-@(content: Html)(implicit token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
+@(content: Html)(implicit settings: Seq[Setting])
 
 <!DOCTYPE html>
 
@@ -33,7 +33,7 @@
             <!-- Modal -->
         <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="Add customer" aria-hidden="true">
             <div class="modal-dialog">
-            @helper.form(action = helper.CSRF(routes.Clients.create), 'class -> "modal-content", 'role -> "form") {
+            @helper.form(action = routes.Clients.create, 'class -> "modal-content", 'role -> "form") {
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Add customer</h4>

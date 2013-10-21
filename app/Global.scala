@@ -1,4 +1,5 @@
 import anorm.Id
+import org.joda.time._
 import play.api._
 import play.api.mvc._
 import models._
@@ -15,26 +16,25 @@ object Global extends WithFilters(new GzipFilter()) {
 object InitialData {
 
   def insert() = {
-    //    if (Client.indexes.isEmpty) {
-    //      Seq(
-    //        Client(Id(1), "Tarcio Saraiva", BigDecimal.valueOf(43.2), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now()),
-    //        Client(Id(2), "Fabiana Fernandes", BigDecimal.valueOf(230), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now()),
-    //        Client(Id(3), "Tatiana Saraiva", BigDecimal.valueOf(10), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now()),
-    //        Client(Id(4), "Dale Young", BigDecimal.valueOf(50), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now()),
-    //        Client(Id(5), "Sadat Rhaman", BigDecimal.valueOf(50), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now()),
-    //        Client(Id(6), "Julia Child", BigDecimal.valueOf(50), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now()),
-    //        Client(Id(7), "Pavi de Alwis", BigDecimal.valueOf(50), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now()),
-    //        Client(Id(8), "Trevor Plant", BigDecimal.valueOf(50), "tarcio@gmail.com", "tarciosaraiva", LocalDate.now())
-    //      ).foreach(Client.create)
-    //
-    //      Seq(
-    //        Transaction(DateTime.now(), true, 50, "", 1L),
-    //        Transaction(DateTime.now(), false, -3.4, "Coffee", 1L),
-    //        Transaction(DateTime.now(), false, -3.4, "Coffee", 1L),
-    //        Transaction(DateTime.now(), true, 25, "", 2L)
-    //      ).foreach(Transaction.create)
-    //    }
-    //  }
+//    if (Client.indexes.isEmpty) {
+//      Seq(
+//        Client(Id(1), "Tarcio Saraiva", BigDecimal.valueOf(43.2), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now())),
+//        Client(Id(2), "Fabiana Fernandes", BigDecimal.valueOf(230), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now())),
+//        Client(Id(3), "Tatiana Saraiva", BigDecimal.valueOf(10), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now())),
+//        Client(Id(4), "Dale Young", BigDecimal.valueOf(50), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now())),
+//        Client(Id(5), "Sadat Rhaman", BigDecimal.valueOf(50), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now())),
+//        Client(Id(6), "Julia Child", BigDecimal.valueOf(50), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now())),
+//        Client(Id(7), "Pavi de Alwis", BigDecimal.valueOf(50), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now())),
+//        Client(Id(8), "Trevor Plant", BigDecimal.valueOf(50), Option.apply("tarcio@gmail.com"), Option.apply("tarciosaraiva"), Option.apply(LocalDate.now()))
+//      ).foreach(Client.create)
+//
+//      Seq(
+//        Transaction(DateTime.now(), true, 50, Option.apply(""), 1L),
+//        Transaction(DateTime.now(), false, -3.4, Option.apply("Coffee"), 1L),
+//        Transaction(DateTime.now(), false, -3.4, Option.apply("Coffee"), 1L),
+//        Transaction(DateTime.now(), true, 25, Option.apply(""), 2L)
+//      ).foreach(Transaction.create)
+//    }
 
     if (Setting.all.isEmpty) {
       Seq(

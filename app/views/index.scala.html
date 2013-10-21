@@ -1,4 +1,4 @@
-@(form: Form[(String)], indexes: Seq[String], results: Seq[Client])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
+@(form: Form[(String)], indexes: Seq[String], results: Seq[Client])(implicit flash: Flash, settings: Seq[Setting])
 
 @import utils.Utils._
 @import tags._
@@ -7,7 +7,7 @@
     <div class="row">
         <div class="col-sm-9">
             <h2>Find coffee addict</h2>
-            @helper.form(action = helper.CSRF(routes.Application.search), 'class -> "search-form form-inline clearfix", 'role -> "form") {
+            @helper.form(action = routes.Clients.search, 'class -> "search-form form-inline clearfix", 'role -> "form") {
                 <div class="input-group">
                     <label class="sr-only" for="term">Enter customer name</label>
                     <input type="text" placeholder="Enter customer name" name="term" id="term" value="@form("term").value" class="form-control" autocomplete="off">
@@ -41,7 +41,7 @@
                                 <span class="name">@client.name</span>
                                 <span class="balance @balance(client.balance)">Balance of @formatNumber(client.balance)</span>
                                 @if(isBirthday(client.dob)) {
-                                    <div class="text-primary">
+                                    <div class="birthday text-success">
                                         <span class="glyphicon glyphicon-gift"></span> Birthday time!
                                     </div>
                                 }
@@ -50,7 +50,7 @@
                                 <a href="#" data-toggle="collapse" data-target="#transaction-form-@client.id.get">
                                     <span class="glyphicon glyphicon-plus-sign"></span> Add new transaction
                                 </a>
-                                @helper.form(action = helper.CSRF(routes.Clients.transaction(client.id.get)), 'class -> "collapse clearfix", 'role -> "form", 'id -> "transaction-form-".concat(client.id.get.toString)) {
+                                @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "collapse clearfix", 'role -> "form", 'id -> "transaction-form-".concat(client.id.get.toString)) {
                                     <div class="form-group">
                                         <label class="sr-only" for="notes">Transaction notes</label>
                                         <input type="text" placeholder="Transaction notes" name="notes" id="notes" class="form-control">
