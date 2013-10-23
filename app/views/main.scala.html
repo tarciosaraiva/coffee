@@ -22,7 +22,7 @@
                     </a>
                     <br/>
                     <br/>
-                    <a href="#addModal" data-toggle="modal" class="btn btn-default btn-primary">Add customer</a>
+                    <a href="#addModal" data-toggle="modal" id="add-customer" class="btn btn-default btn-primary">Add customer</a>
                 </div>
                 <div class="col-sm-10">
                 @content
@@ -33,7 +33,7 @@
             <!-- Modal -->
         <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="Add customer" aria-hidden="true">
             <div class="modal-dialog">
-            @helper.form(action = routes.Clients.create, 'class -> "modal-content", 'role -> "form") {
+            @helper.form(action = routes.Clients.create, 'class -> "modal-content", 'role -> "form", 'id -> "add-customer-form") {
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Add customer</h4>
