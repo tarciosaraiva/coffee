@@ -5,12 +5,17 @@ import anorm.{ToStatement, TypeDoesNotMatch, MetaDataItem, Column}
 import org.joda.time._
 import java.text.{SimpleDateFormat, NumberFormat}
 import models.{Client, Transaction}
+import java.util.TimeZone
 
 object Utils {
 
   def formatNumber(amount: BigDecimal) = NumberFormat.getCurrencyInstance.format(amount)
 
-  def formatDateTime(dateTime: DateTime) = new SimpleDateFormat("dd MMM h:mm a").format(dateTime.toDate)
+  def formatDateTime(dateTime: DateTime) = {
+    def sdf = new SimpleDateFormat("dd MMM h:mm a")
+    sdf.setTimeZone(TimeZone.getTimeZone("Australia/Melbourne"))
+    sdf.format(dateTime.toDate)
+  }
 
   def isBirthday(birthDate: Option[LocalDate]): Boolean = {
     if (birthDate.isEmpty) return false
