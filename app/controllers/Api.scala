@@ -1,6 +1,7 @@
 package controllers
 
 import models._
+import utils.Utils._
 import play.api.mvc._
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
@@ -57,22 +58,22 @@ object Api extends Controller {
       Ok(Json.obj("client" -> client.toJson, "transactions" -> transactions.map(_.toJson)))
   }
 
-  def addClient = Action(parse.json) {
+  def newClient = Action(parse.json) {
     request =>
       request.body.validate[(String, BigDecimal, Option[String], Option[String], Option[LocalDate], Boolean)].map {
-        case (name, balance, email, twitter, dob, addTransaction) => {
+        case (name, balance, email, twitter, dob, addDebitTransaction) => {
           // add the client
           val newClientId = Client.create(Client(Id(1), name, BigDecimal(0), email, twitter, dob)).get
 
+          val currentTime = DateTime.now(melbTz)
+          val creditTransaction = true
+
           // add two transactions, one for the top-up
-          Transaction.create(Transaction(DateTime.now, true, balance, null, newClientId))
+          addTransaction(newClientId, Seq(Transaction(currentTime, creditTransaction, balance, Option.apply(null), newClientId)), !addDebitTransaction)
 
           // and the other for the coffee
-          if (addTransaction)
-            Transaction.create(Transaction(DateTime.now, false, BigDecimal(-3.4), Option.apply("Coffee"), newClientId))
-
-          // and then updates the client
-          Client.updateBalance(newClientId)
+          if (addDebitTransaction)
+            addTransaction(newClientId, Seq(Transaction(currentTime, creditTransaction.unary_!, BigDecimal(-3.4), Option.apply("Coffee"), newClientId)))
 
           Ok(Json.obj("id" -> newClientId))
         }
@@ -81,12 +82,11 @@ object Api extends Controller {
       }
   }
 
-  def addTransaction(id: Long) = Action(parse.json) {
+  def newTransaction(id: Long) = Action(parse.json) {
     request =>
       request.body.validate[(BigDecimal, Option[String], Boolean)].map {
         case (amount, notes, credit) => {
-          Transaction.create(Transaction(DateTime.now, credit, amount, notes, id))
-          Client.updateBalance(id)
+          addTransaction(id, Seq(Transaction(DateTime.now(melbTz), credit, amount, notes, id)))
           Ok
         }
       }.recoverTotal {
