@@ -8,8 +8,6 @@ import models.{Client, Transaction}
 
 object Utils {
 
-  val melbTz = DateTimeZone.forID("Australia/Melbourne")
-
   def formatNumber(amount: BigDecimal) = NumberFormat.getCurrencyInstance.format(amount)
 
   def formatDateTime(dateTime: DateTime) = new SimpleDateFormat("dd MMM h:mm a").format(dateTime.toDate)
@@ -18,7 +16,7 @@ object Utils {
     if (birthDate.isEmpty) return false
 
     val sdf = new SimpleDateFormat("ddMM")
-    val now = sdf.format(LocalDate.now(melbTz).toDate)
+    val now = sdf.format(LocalDate.now.toDate)
     val birth = sdf.format(birthDate.get.toDate)
 
     now == birth

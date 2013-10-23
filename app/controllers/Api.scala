@@ -65,7 +65,7 @@ object Api extends Controller {
           // add the client
           val newClientId = Client.create(Client(Id(1), name, BigDecimal(0), email, twitter, dob)).get
 
-          val currentTime = DateTime.now(melbTz)
+          val currentTime = DateTime.now
           val creditTransaction = true
 
           // add two transactions, one for the top-up
@@ -86,7 +86,7 @@ object Api extends Controller {
     request =>
       request.body.validate[(BigDecimal, Option[String], Boolean)].map {
         case (amount, notes, credit) => {
-          addTransaction(id, Seq(Transaction(DateTime.now(melbTz), credit, amount, notes, id)))
+          addTransaction(id, Seq(Transaction(DateTime.now, credit, amount, notes, id)))
           Ok
         }
       }.recoverTotal {

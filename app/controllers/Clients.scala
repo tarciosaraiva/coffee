@@ -68,7 +68,7 @@ object Clients extends Controller with Secured {
         formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(id).get, Transaction.allByClient(id))),
         trans => {
           val amount = if (trans._3) trans._2 else trans._2.unary_-
-          addTransaction(id, Seq(Transaction(DateTime.now(melbTz), trans._3, amount, trans._1, id)))
+          addTransaction(id, Seq(Transaction(DateTime.now), trans._3, amount, trans._1, id)))
 
           if (request.headers("Referer").contains("clients")) {
             Redirect(routes.Clients.show(id)).flashing(("success", "Transaction added successfully."))
@@ -97,7 +97,7 @@ object Clients extends Controller with Secured {
               client._5)
           ).get
 
-          val currentTime = DateTime.now(melbTz)
+          val currentTime = DateTime.now
           val creditTransaction = true
 
           // add two transactions, one for the top-up
