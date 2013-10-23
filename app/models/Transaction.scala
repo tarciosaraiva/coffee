@@ -49,6 +49,18 @@ object Transaction {
     }
   }
 
+  def limitedByClient(clientId: Long): Seq[Transaction] = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("select * from transaction " +
+          "where client_id = {client_id} " +
+          "and transaction_date > now() - interval '1 week' " +
+          "order by transaction_date desc")
+          .on('client_id -> clientId)
+          .as(Transaction.simple *)
+    }
+  }
+
   def create(transaction: Transaction): Option[Long] = {
     DB.withConnection {
       implicit connection =>
