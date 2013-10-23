@@ -9,24 +9,6 @@
     }
   }
 
-  .action {
-    a {
-      display: block;
-
-      span {
-        top: 2px;
-      }
-    }
-
-    form {
-      padding-top: 10px;
-
-      .form-group:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
-
   .info {
 
     .name, .balance {
@@ -65,5 +47,33 @@
   .btn-idx {
     display: block;
     font-weight: bold;
+
+    &.selected {
+      background-color: #333333;
+    }
+  }
+}
+
+.transaction {
+  background-color: #f5f5f5;
+
+  a {
+    display: block;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    span {
+      top: 2px;
+    }
+  }
+
+  form {
+    padding-top: 10px;
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
   }
 }

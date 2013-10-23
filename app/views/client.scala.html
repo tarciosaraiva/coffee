@@ -1,116 +1,112 @@
-@(transactionForm: Form[(Option[String], BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash, settings: Seq[Setting])
-@import utils.Utils._
-@import tags._
-@main {
-    <div class="row">
-        <div class="col-sm-8">
-            <h2>
-                @client.name
-                @if(!client.twitter.isEmpty) {
-                    <img src="@routes.Assets.at("images/twitter.png")"/>
-                    <small>&#64;@client.twitter</small>
-                }
-            </h2>
-
-            <h3 class="@balance(client.balance)">Balance of @formatNumber(client.balance)</h3>
-
-            @if(isBirthday(client.dob)) {
-                <div class="alert alert-info">
-                    <span class="glyphicon glyphicon-gift"></span> Today is @client.name's birthday!
-                </div>
-            }
-
-            @flash.get("success").map { message =>
-                <div class="alert alert-success">
-                    <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
-                </div>
-            }
-
-            <h3>Transactions</h3>
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Notes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    @transactions.map { t =>
-                        <tr>
-                            <td>@formatDateTime(t.transactionDate)</td>
-                            @if(t.amount.<(BigDecimal(0))) {
-                                <td class="text-danger">@formatNumber(t.amount)</td>
-                            } else {
-                                <td>@formatNumber(t.amount)</td>
-                            }
-                            <td>@t.notes</td>
-                        </tr>
+@(transactionForm: Form[(Option[String], BigDecimal, Boolean)], client: Client, transactions: Seq[Transaction])(implicit flash: Flash, settings: Seq[Setting], indexes: Seq[String])
+    @import utils.Utils._
+    @import tags._
+    @main {
+        <div class="row">
+            <div class="col-sm-9">
+                <h2>
+                    @client.name
+                    @if(!client.twitter.isEmpty) {
+                        <img src="@routes.Assets.at("images/twitter.png")"/>
+                        <small>&#64;@client.twitter</small>
                     }
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="well">
-                @if(client.balance.>(BigDecimal(3))) {
-                    @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "clearfix", 'role -> "form") {
-                        <h4>Debit from account</h4>
+                </h2>
 
-                        @transactionForm.errors.map { error =>
-                            <p class="alert alert-danger">
-                                <span class="glyphicon glyphicon-remove-sign"></span> @Messages(error.message)
-                            </p>
-                        }
+                <h3 class="@balance(client.balance)">Balance of @formatNumber(client.balance)</h3>
 
-                        <div class="form-group">
-                            <label class="sr-only" for="notes">Transaction notes</label>
-                            <input type="text" placeholder="Transaction notes" name="notes" id="notes" class="form-control input-lg">
-                        </div>
-                        <div class="form-group">
-                            <label class="sr-only" for="amount">Enter credit amount</label>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <span class="glyphicon glyphicon-usd"></span>
-                                </span>
-                                <input type="number" placeholder="Enter amount" name="amount" id="amount" class="form-control input-lg" step="any" autocomplete="off">
-                            </div>
-                        </div>
-
-                        <input type="hidden" id="credit" name="credit" value="false">
-                        <button type="submit" class="btn btn-lg btn-success pull-right">Debit</button>
-                    }
-                } else {
-                    <p class="lead text-info">Debit from account is available when balance is above A$3.</p>
-                }
-
-                <hr/>
-
-                @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "clearfix", 'role -> "form") {
-                    <h4>Credit into account</h4>
-
-                    @transactionForm.errors.map { error =>
-                        <p class="alert alert-danger">
-                            <span class="glyphicon glyphicon-remove-sign"></span> @Messages(error.message)
-                        </p>
-                    }
-
-                    <div class="form-group">
-                        <label class="sr-only" for="amount">Enter credit amount</label>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-usd"></span>
-                            </span>
-                            <input type="number" placeholder="Enter amount" name="amount" value="25.00" step="any" id="amount" class="form-control input-lg">
-                        </div>
+                @if(isBirthday(client.dob)) {
+                    <div class="alert alert-info">
+                        <span class="glyphicon glyphicon-gift"></span> Today is @client.name's birthday!
                     </div>
-                    <input type="hidden" id="notes" name="notes" value="">
-                    <input type="hidden" id="credit" name="credit" value="true">
-                    <button type="submit" class="btn btn-lg btn-warning pull-right">Credit</button>
                 }
+
+                @flash.get("success").map { message =>
+                    <div class="alert alert-success">
+                        <span class="glyphicon glyphicon-ok-sign"></span> <strong>Yay!</strong> @message
+                    </div>
+                }
+
+                <h3>Transactions</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @transactions.map { t =>
+                            <tr>
+                                <td>@formatDateTime(t.transactionDate)</td>
+                                @if(t.amount.<(BigDecimal(0))) {
+                                    <td class="text-danger">@formatNumber(t.amount)</td>
+                                } else {
+                                    <td>@formatNumber(t.amount)</td>
+                                }
+                                <td>@t.notes</td>
+                            </tr>
+                        }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3" class="transaction">
+                                    <a href="#" class="add-transaction" data-toggle="collapse" data-target="#transactionForm">
+                                        <span class="glyphicon glyphicon-plus-sign"></span> Add new transaction
+                                    </a>
+                                    @helper.form(action = routes.Clients.transaction(client.id.get), 'class -> "collapse clearfix", 'role -> "form", 'id -> "transactionForm") {
+                                        <div class="form-group">
+                                            <label class="sr-only" for="notes">Transaction notes</label>
+                                            <input type="text" placeholder="Transaction notes" name="notes" id="notes" class="form-control">
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="sr-only" for="amount">Enter credit amount</label>
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <span class="glyphicon glyphicon-usd"></span>
+                                                </span>
+                                                <input type="number" placeholder="Enter amount" name="amount" id="amount" class="form-control" step="any" autocomplete="off">
+                                                <span class="input-group-btn">
+                                                    <button type="submit" class="btn btn-success pull-right">Submit</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @if(client.balance.>(BigDecimal(3))) {
+                                            <div class="form-group">
+                                                <div class="checkbox">
+                                                    <label>
+                                                        <input type="checkbox" id="credit" name="credit" value="true">
+                                                        This is a credit transaction
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        } else {
+                                            <div>
+                                                <span class="text-warning">
+                                                    You can only add a credit transaction when balance is below A$3.</span>
+                                                <input type="hidden" id="credit" name="credit" value="true">
+                                            </div>
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <h3>Name index</h3>
+                <div class="well well-sm">
+                    <ul class="name-index list-inline">
+                    @indexes.map { idx =>
+                        <li>
+                            <a href="/index/@idx" class="btn btn-default btn-lg btn-idx">@idx</a>
+                        </li>
+                    }
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
 
-}
+    }

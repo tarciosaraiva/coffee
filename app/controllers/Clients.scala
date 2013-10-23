@@ -37,22 +37,24 @@ object Clients extends Controller with Secured {
 
   implicit val settings: Seq[Setting] = Setting.all
 
+  implicit val indexes: Seq[String] = Client.indexes
+
   def home = IsAuthenticated {
     user => implicit request =>
-      Ok(views.html.index(searchForm, Client.indexes, List.empty))
+      Ok(views.html.index(searchForm, "", List.empty))
   }
 
   def search = Action {
     implicit request =>
       searchForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.index(formWithErrors, Client.indexes, List.empty)),
-        term => Ok(views.html.index(searchForm, Client.indexes, Client.findByName(term)))
+        formWithErrors => BadRequest(views.html.index(formWithErrors, "", List.empty)),
+        term => Ok(views.html.index(searchForm, "", Client.findByName(term)))
       )
   }
 
   def index(index: String) = IsAuthenticated {
     user => implicit request =>
-      Ok(views.html.index(searchForm, Client.indexes, Client.indexes(index)))
+      Ok(views.html.index(searchForm, index, Client.indexes(index)))
   }
 
   def show(id: Long) = IsAuthenticated {
