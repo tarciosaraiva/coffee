@@ -3,13 +3,14 @@ package controllers
 import models._
 import org.joda.time._
 import scala.Predef._
+import utils.Utils._
 
 import controllers.security.Secured
 import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 
-import anorm._
+import anorm.Id
 
 object Clients extends Controller with Secured {
 
@@ -65,8 +66,7 @@ object Clients extends Controller with Secured {
         formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(id).get, Transaction.allByClient(id))),
         trans => {
           val amount = if (trans._3) trans._2 else trans._2.unary_-
-          Transaction.create(Transaction(DateTime.now, trans._3, amount, trans._1, id))
-          Client.updateBalance(id)
+          addTransaction(id, Seq(Transaction(DateTime.now(melbTz), trans._3, amount, trans._1, id)))
 
           if (request.headers("Referer").contains("clients")) {
             Redirect(routes.Clients.show(id)).flashing(("success", "Transaction added successfully."))
@@ -95,17 +95,15 @@ object Clients extends Controller with Secured {
               client._5)
           ).get
 
-          val currentTime = DateTime.now
+          val currentTime = DateTime.now(melbTz)
+          val creditTransaction = true
 
           // add two transactions, one for the top-up
-          Transaction.create(Transaction(currentTime, true, client._2, Option.apply(null), newClientId))
+          addTransaction(newClientId, Seq(Transaction(currentTime, creditTransaction, client._2, Option.apply(null), newClientId)), !client._6)
 
           // and the other for the coffee
           if (client._6)
-            Transaction.create(Transaction(currentTime, false, BigDecimal(-3.4), Option.apply("Coffee"), newClientId))
-
-          // and then updates the client
-          Client.updateBalance(newClientId)
+            addTransaction(newClientId, Seq(Transaction(currentTime, !creditTransaction, BigDecimal(-3.4), Option.apply("Coffee"), newClientId)))
 
           if (client._7)
             Redirect(routes.Clients.show(newClientId))

@@ -49,7 +49,7 @@ object Transaction {
     }
   }
 
-  def create(transaction: Transaction) = {
+  def create(transaction: Transaction): Option[Long] = {
     DB.withConnection {
       implicit connection =>
         SQL(

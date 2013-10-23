@@ -4,8 +4,11 @@ import org.joda.time.format.{DateTimeFormat, DateTimeFormatter}
 import anorm.{ToStatement, TypeDoesNotMatch, MetaDataItem, Column}
 import org.joda.time._
 import java.text.{SimpleDateFormat, NumberFormat}
+import models.{Client, Transaction}
 
 object Utils {
+
+  val melbTz = DateTimeZone.forID("Australia/Melbourne")
 
   def formatNumber(amount: BigDecimal) = NumberFormat.getCurrencyInstance.format(amount)
 
@@ -15,10 +18,16 @@ object Utils {
     if (birthDate.isEmpty) return false
 
     val sdf = new SimpleDateFormat("ddMM")
-    val now = sdf.format(LocalDate.now.toDate)
+    val now = sdf.format(LocalDate.now(melbTz).toDate)
     val birth = sdf.format(birthDate.get.toDate)
 
     now == birth
+  }
+
+  def addTransaction(cid: Long, t: Seq[Transaction], update: Boolean = true) = {
+    t.foreach(Transaction.create)
+    if (update)
+      Client.updateBalance(cid)
   }
 
 }
