@@ -11,7 +11,8 @@ import play.api.libs.json._
 import org.joda.time._
 import utils.AnormExtension._
 
-case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: Option[String], twitter: Option[String], dob: Option[LocalDate]) {
+case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: Option[String], twitter: Option[String],
+                  dob: Option[LocalDate], lastTransactionAmount: BigDecimal) {
 
   val clientWrites = new Writes[Client] {
     def writes(c: Client): JsValue = Json.obj(
@@ -37,8 +38,11 @@ object Client {
       get[java.math.BigDecimal]("client.balance") ~
       get[Option[String]]("client.email") ~
       get[Option[String]]("client.twitter") ~
-      get[Option[LocalDate]]("client.dob") map {
-      case id ~ name ~ balance ~ email ~ twitter ~ dob => Client(id, name, BigDecimal(balance), email, twitter, dob)
+      get[Option[LocalDate]]("client.dob") ~
+      get[java.math.BigDecimal]("last_transaction_amount") map {
+      case id ~ name ~ balance ~ email ~ twitter ~ dob ~ last_transaction_amount => {
+        Client(id, name, BigDecimal(balance), email, twitter, dob, BigDecimal(last_transaction_amount))
+      }
     }
   }
 
@@ -52,7 +56,8 @@ object Client {
   def indexes(index: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) as name, balance, email, twitter, dob " +
+        SQL("select id, concat(first_name, ' ', last_name) as name, balance, email, twitter, dob, " +
+          "(select abs(amount) from transaction where client_id = client.id order by transaction_date desc limit 1) as last_transaction_amount " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> index.concat("%"))
           .as(Client.simple *)
@@ -62,7 +67,8 @@ object Client {
   def findByName(name: String): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob " +
+        SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
+          "(select abs(amount) from transaction where client_id = client.id order by transaction_date desc limit 1) as last_transaction_amount " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> "%".concat(name).concat("%"))
           .as(Client.simple *)
@@ -72,7 +78,8 @@ object Client {
   def findOne(id: Long): Option[Client] = {
     DB.withConnection {
       implicit connection =>
-        SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob " +
+        SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
+          "(select abs(amount) from transaction where client_id = client.id order by transaction_date desc limit 1) as last_transaction_amount " +
           "from client where id = {id}")
           .on('id -> id)
           .as(Client.simple.singleOpt)

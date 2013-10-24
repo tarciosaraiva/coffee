@@ -23,6 +23,7 @@ class AddCustomerSpec extends Specification {
       browser.$("#add-customer-form").submit()
 
       browser.pageSource must contain("Client created successfully.")
+      browser.$("#name-index").find("S")
     }
   }
 

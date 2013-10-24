@@ -61,7 +61,7 @@
                                                 <span class="input-group-addon">
                                                     <span class="glyphicon glyphicon-usd"></span>
                                                 </span>
-                                                <input type="number" placeholder="Enter amount" name="amount" id="amount" class="form-control" step="any" autocomplete="off">
+                                                <input type="number" placeholder="Enter amount" name="amount" id="amount" class="form-control" step="any" autocomplete="off" value="@client.lastTransactionAmount">
                                                 <span class="input-group-btn">
                                                     <button type="submit" class="btn btn-success pull-right">Submit</button>
                                                 </span>
@@ -108,10 +108,10 @@
             <div class="col-sm-3">
                 <h3>Name index</h3>
                 <div class="well well-sm">
-                    <ul class="name-index list-inline">
+                    <ul id="name-index" class="name-index list-inline">
                     @indexes.map { idx =>
                         <li>
-                            <a href="/index/@idx" class="btn btn-default btn-lg btn-idx @if(current.equals(idx)) {selected}">@idx</a>
+                            <a id="@idx" href="/index/@idx" class="btn btn-default btn-lg btn-idx @if(current.equals(idx)) {selected}">@idx</a>
                         </li>
                     }
                     </ul>

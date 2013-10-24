@@ -37,7 +37,7 @@ object Clients extends Controller with Secured {
 
   implicit val settings: Seq[Setting] = Setting.all
 
-  implicit val indexes: Seq[String] = Client.indexes
+  implicit def indexes: Seq[String] = Client.indexes
 
   def home = IsAuthenticated {
     user => implicit request =>
@@ -94,7 +94,8 @@ object Clients extends Controller with Secured {
               BigDecimal(0),
               client._3,
               client._4,
-              client._5)
+              client._5,
+              BigDecimal(0))
           ).get
 
           val currentTime = DateTime.now
