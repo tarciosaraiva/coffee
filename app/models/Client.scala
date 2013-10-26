@@ -12,7 +12,7 @@ import org.joda.time._
 import utils.AnormExtension._
 
 case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: Option[String], twitter: Option[String],
-                  dob: Option[LocalDate], lastTransactionAmount: Option[BigDecimal]) {
+                  dob: Option[LocalDate], lastTransactionAmount: BigDecimal) {
 
   val clientWrites = new Writes[Client] {
     def writes(c: Client): JsValue = Json.obj(
