@@ -9,7 +9,7 @@ import anorm.SqlParser._
 import scala._
 import anorm.~
 import scala.language.postfixOps
-import play.api.libs.json.{Json, JsValue, Writes}
+import play.api.libs.json._
 
 case class Transaction(transactionDate: DateTime, credit: Boolean, amount: BigDecimal, notes: Option[String], client: Long) {
 
