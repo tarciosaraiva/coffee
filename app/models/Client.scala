@@ -95,7 +95,7 @@ object Client {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
           "0.0 as last_transaction_amount, notified " +
-          "from client where email is not null and balance < 5")
+          "from client where email is not null and balance < 5 and notified = false")
           .as(Client.simple *)
     }
   }
