@@ -22,8 +22,9 @@ object Global extends WithFilters(new GzipFilter()) {
 
   def sendEmail(client: Client) {
     val mail = use[MailerPlugin].email
-
     val clientEmail = client.email.get
+
+    implicit val settings: Seq[Setting] = Setting.all
 
     mail.setSubject("mailer")
     mail.setRecipient(client.name + " <" + clientEmail + ">", clientEmail)
