@@ -14,7 +14,7 @@ object Global extends WithFilters(new GzipFilter()) {
   override def onStart(app: Application) {
     InitialData.insert()
 
-    Akka.system.scheduler.schedule(0.second, 5.minute) {
+    Akka.system.scheduler.schedule(0.second, 24.hour) {
       Client.findAllWithEmailAndSmallBalance.foreach(sendEmail)
     }
 
@@ -23,8 +23,6 @@ object Global extends WithFilters(new GzipFilter()) {
   def sendEmail(client: Client) {
     val mail = use[MailerPlugin].email
     val clientEmail = client.email.get
-
-    implicit val settings: Seq[Setting] = Setting.all
 
     mail.setSubject("mailer")
     mail.setRecipient(client.name + " <" + clientEmail + ">", clientEmail)

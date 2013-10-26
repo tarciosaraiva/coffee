@@ -1,4 +1,4 @@
-@(client: Client)(implicit settings: Seq[Setting])
+@(client: Client)
 @import utils.Utils.formatNumber
 <html>
     <body>
@@ -8,10 +8,5 @@
             Thank you,<br/>
             Your friends from Black Velvet
         </p>
-        <div>
-            <a href="/">
-                <img src="data:image/png;base64,@settings(0).value" />
-            </a>
-        </div>
     </body>
 </html>
