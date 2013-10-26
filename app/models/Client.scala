@@ -12,7 +12,7 @@ import org.joda.time._
 import utils.AnormExtension._
 
 case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: Option[String], twitter: Option[String],
-                  dob: Option[LocalDate], lastTransactionAmount: BigDecimal) {
+                  dob: Option[LocalDate], lastTransactionAmount: BigDecimal, notified: Boolean) {
 
   val clientWrites = new Writes[Client] {
     def writes(c: Client): JsValue = Json.obj(
@@ -39,9 +39,10 @@ object Client {
       get[Option[String]]("client.email") ~
       get[Option[String]]("client.twitter") ~
       get[Option[LocalDate]]("client.dob") ~
-      get[java.math.BigDecimal]("last_transaction_amount") map {
-      case id ~ name ~ balance ~ email ~ twitter ~ dob ~ last_transaction_amount => {
-        Client(id, name, BigDecimal(balance), email, twitter, dob, BigDecimal(last_transaction_amount))
+      get[java.math.BigDecimal]("last_transaction_amount") ~
+      get[Boolean]("notified") map {
+      case id ~ name ~ balance ~ email ~ twitter ~ dob ~ last_transaction_amount ~ notified => {
+        Client(id, name, BigDecimal(balance), email, twitter, dob, BigDecimal(last_transaction_amount), notified)
       }
     }
   }
@@ -58,7 +59,7 @@ object Client {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) as name, balance, email, twitter, dob, " +
           "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1), 0) as last_transaction_amount " +
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> index.concat("%"))
           .as(Client.simple *)
@@ -70,7 +71,7 @@ object Client {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
           "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1), 0) as last_transaction_amount " +
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> "%".concat(name).concat("%"))
           .as(Client.simple *)
@@ -82,10 +83,20 @@ object Client {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
           "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1), 0) as last_transaction_amount " +
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified " +
           "from client where id = {id}")
           .on('id -> id)
           .as(Client.simple.singleOpt)
+    }
+  }
+
+  def findAllWithEmailAndSmallBalance: Seq[Client] = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
+          "0.0 as last_transaction_amount, notified " +
+          "from client where email is not null and balance < 5")
+          .as(Client.simple *)
     }
   }
 
@@ -93,6 +104,15 @@ object Client {
     DB.withConnection {
       implicit connection =>
         SQL("update client set balance = (select sum(amount) from transaction where client_id = {id}) where id = {id}")
+          .on('id -> id)
+          .executeUpdate()
+    }
+  }
+
+  def markNotified(id: Long): Int = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("update client set notified = !notified where id = {id}")
           .on('id -> id)
           .executeUpdate()
     }

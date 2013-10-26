@@ -63,7 +63,7 @@ object Api extends Controller {
       request.body.validate[(String, BigDecimal, Option[String], Option[String], Option[LocalDate], Boolean)].map {
         case (name, balance, email, twitter, dob, addDebitTransaction) => {
           // add the client
-          val newClientId = Client.create(Client(Id(1), name, BigDecimal(0), email, twitter, dob, BigDecimal(0))).get
+          val newClientId = Client.create(Client(Id(1), name, BigDecimal(0), email, twitter, dob, BigDecimal(0), false)).get
 
           val currentTime = DateTime.now
           val creditTransaction = true

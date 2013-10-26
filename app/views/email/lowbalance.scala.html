@@ -1,0 +1,10 @@
+@(client: Client)
+@import utils.Utils.formatNumber
+<html>
+    <body>
+        <p>Dear @client.name</p>
+        <p>This is a note to let you know that our records show that your balance is at @formatNumber(client.balance)</p>
+        <p>Thank you,</p>
+        <p>Your friends from Black Velvet</p>
+    </body>
+</html>
