@@ -12,7 +12,7 @@ import org.joda.time._
 import utils.AnormExtension._
 
 case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: Option[String], twitter: Option[String],
-                  dob: Option[LocalDate], lastTransactionAmount: BigDecimal) {
+                  dob: Option[LocalDate], lastTransactionAmount: Option[BigDecimal]) {
 
   val clientWrites = new Writes[Client] {
     def writes(c: Client): JsValue = Json.obj(
@@ -57,8 +57,8 @@ object Client {
     DB.withConnection {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) as name, balance, email, twitter, dob, " +
-          "(select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1) as last_transaction_amount " +
+          "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> index.concat("%"))
           .as(Client.simple *)
@@ -69,8 +69,8 @@ object Client {
     DB.withConnection {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
-          "(select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1) as last_transaction_amount " +
+          "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount " +
           "from client where lower(first_name) like lower({name}) order by 1")
           .on('name -> "%".concat(name).concat("%"))
           .as(Client.simple *)
@@ -81,8 +81,8 @@ object Client {
     DB.withConnection {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
-          "(select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1) as last_transaction_amount " +
+          "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount " +
           "from client where id = {id}")
           .on('id -> id)
           .as(Client.simple.singleOpt)
