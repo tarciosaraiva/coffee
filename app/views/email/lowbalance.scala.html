@@ -1,10 +1,17 @@
-@(client: Client)
+@(client: Client)(implicit settings: Seq[Setting])
 @import utils.Utils.formatNumber
 <html>
     <body>
         <p>Dear @client.name</p>
-        <p>This is a note to let you know that our records show that your balance is at @formatNumber(client.balance)</p>
-        <p>Thank you,</p>
-        <p>Your friends from Black Velvet</p>
+        <p>This is a note to let you know that our records show that your balance is at @formatNumber(client.balance). </p>
+        <p>
+            Thank you,<br/>
+            Your friends from Black Velvet
+        </p>
+        <div>
+            <a href="/">
+                <img src="data:image/png;base64,@settings(0).value" />
+            </a>
+        </div>
     </body>
 </html>

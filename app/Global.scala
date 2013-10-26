@@ -27,6 +27,7 @@ object Global extends WithFilters(new GzipFilter()) {
 
     mail.setSubject("mailer")
     mail.setRecipient(client.name + " <" + clientEmail + ">", clientEmail)
+    mail.setSubject("Your balance with Black Velvet Espresso")
     mail.setFrom("Black Velvet <noreply@blackvelvetespresso.com.au>")
     mail.sendHtml(views.html.email.lowbalance(client).body)
 

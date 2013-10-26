@@ -112,7 +112,7 @@ object Client {
   def markNotified(id: Long): Int = {
     DB.withConnection {
       implicit connection =>
-        SQL("update client set notified = !notified where id = {id}")
+        SQL("update client set notified = not(notified) where id = {id}")
           .on('id -> id)
           .executeUpdate()
     }
