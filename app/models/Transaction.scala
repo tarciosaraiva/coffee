@@ -50,6 +50,20 @@ object Transaction {
     }
   }
 
+  def updateTransaction(tid: Long, cid: Long, amount: BigDecimal, notes: Option[String]): Int = {
+    DB.withConnection {
+      implicit connection =>
+        SQL(
+          "update transaction set amount = {amount}, notes = {notes} where id = {id} and client_id = {client_id}"
+        ).on(
+          'amount -> amount.doubleValue(),
+          'notes -> notes,
+          'id -> tid,
+          'client_id -> cid
+        ).executeUpdate()
+    }
+  }
+
   def limitedByClient(clientId: Long): Seq[Transaction] = {
     DB.withConnection {
       implicit connection =>

@@ -118,16 +118,27 @@ object Clients extends Controller with Secured {
         })
   }
 
-  def deleteTransaction(cId: Long, tId: Long) = Action {
+  def deleteTransaction(cid: Long, tid: Long) = Action {
     implicit request =>
-      val total = Client.deleteTransaction(cId, tId)
+      val total = Client.deleteTransaction(cid, tid)
       var flashMsg = ("error", "Could not delete transaction. Does it belong to this customer?")
       if (total == 1) {
         flashMsg = ("success", "Transaction deleted successfully.")
-        Client.updateBalance(cId)
+        Client.updateBalance(cid)
       }
 
-      Redirect(routes.Clients.show(cId)).flashing(flashMsg)
+      Redirect(routes.Clients.show(cid)).flashing(flashMsg)
+  }
+
+  def editTransaction(cid: Long, tid: Long) = Action {
+    implicit request =>
+      transactionForm.bindFromRequest.fold(
+        formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(cid).get, Transaction.allByClient(cid))),
+        trans => {
+          Transaction.updateTransaction(tid, cid, trans._2, trans._1)
+          Client.updateBalance(cid)
+          Redirect(routes.Clients.show(cid)).flashing(("success", "Transaction updated successfully."))
+        })
   }
 
 }

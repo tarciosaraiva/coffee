@@ -53,10 +53,43 @@
                                     <td>@formatNumber(t.amount)</td>
                                 }
                                 <td>@t.notes</td>
-                                <td>
-                                    @helper.form(action = routes.Clients.deleteTransaction(client.id.get, t.id.get)) {
+                                <td class="col-sm-3">
+                                    @helper.form(action = routes.Clients.deleteTransaction(client.id.get, t.id.get), 'class -> "text-right") {
                                         <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                        <a href="#editModal-@t.id.get" data-toggle="modal" id="edit-customer" class="btn btn-sm btn-warning">Modify</a>
                                     }
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="editModal-@t.id.get" tabindex="-1" role="dialog" aria-labelledby="Edit customer" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                        @helper.form(action = routes.Clients.editTransaction(client.id.get, t.id.get), 'class -> "modal-content", 'role -> "form", 'id -> "edit-customer-form") {
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                                <h4 class="modal-title">Edit customer</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="form-group">
+                                                    <label class="sr-only" for="amount">Notes</label>
+                                                    <input type="text" placeholder="Enter customer first and last names" value="@t.notes" name="notes" id="notes" class="form-control" autofocus>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="sr-only" for="amount">Transaction amount</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-addon">
+                                                            <span class="glyphicon glyphicon-usd"></span>
+                                                        </span>
+                                                        <input type="number" placeholder="Transaction amount" step="any" name="amount" value="@t.amount" id="amount" class="form-control">
+                                                    </div>
+                                                </div>
+                                                <input type="hidden" id="credit" name="credit" value="@t.credit">
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Save changes</button>
+                                            </div>
+                                        }
+                                        </div> <!-- /.modal-dialog -->
+                                    </div> <!-- /.modal -->
                                 </td>
                             </tr>
                         }
