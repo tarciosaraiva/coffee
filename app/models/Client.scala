@@ -109,6 +109,16 @@ object Client {
     }
   }
 
+  def deleteTransaction(cId: Long, tId: Long): Int = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("delete from transaction where id = {id} and client_id = {client_id}")
+          .on('id -> tId)
+          .on('client_id -> cId)
+          .executeUpdate()
+    }
+  }
+
   def markNotified(id: Long): Int = {
     DB.withConnection {
       implicit connection =>

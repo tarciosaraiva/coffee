@@ -69,11 +69,11 @@ object Api extends Controller {
           val creditTransaction = true
 
           // add two transactions, one for the top-up
-          addTransaction(newClientId, Seq(Transaction(currentTime, creditTransaction, balance, Option.apply(null), newClientId)), !addDebitTransaction)
+          addTransaction(newClientId, Seq(Transaction(Id(1), currentTime, creditTransaction, balance, Option.apply(null), newClientId)), !addDebitTransaction)
 
           // and the other for the coffee
           if (addDebitTransaction)
-            addTransaction(newClientId, Seq(Transaction(currentTime, creditTransaction.unary_!, BigDecimal(-3.4), Option.apply("Coffee"), newClientId)))
+            addTransaction(newClientId, Seq(Transaction(Id(1), currentTime, creditTransaction.unary_!, BigDecimal(-3.4), Option.apply("Coffee"), newClientId)))
 
           Ok(Json.obj("id" -> newClientId))
         }
@@ -86,7 +86,7 @@ object Api extends Controller {
     request =>
       request.body.validate[(BigDecimal, Option[String], Boolean)].map {
         case (amount, notes, credit) => {
-          addTransaction(id, Seq(Transaction(DateTime.now, credit, amount, notes, id)))
+          addTransaction(id, Seq(Transaction(Id(1), DateTime.now, credit, amount, notes, id)))
           Ok
         }
       }.recoverTotal {

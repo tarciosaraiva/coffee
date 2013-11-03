@@ -26,6 +26,12 @@
                     </div>
                 }
 
+                @flash.get("error").map { message =>
+                    <div class="alert alert-danger">
+                        <span class="glyphicon glyphicon-ok-sign"></span> <strong>Uh oh!</strong> @message
+                    </div>
+                }
+
                 <h3>Transactions</h3>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped">
@@ -34,6 +40,7 @@
                                 <th>Date</th>
                                 <th>Amount</th>
                                 <th>Notes</th>
+                                <th>Options</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -46,12 +53,17 @@
                                     <td>@formatNumber(t.amount)</td>
                                 }
                                 <td>@t.notes</td>
+                                <td>
+                                    @helper.form(action = routes.Clients.deleteTransaction(client.id.get, t.id.get)) {
+                                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                    }
+                                </td>
                             </tr>
                         }
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="3" class="transaction">
+                                <td colspan="4" class="transaction">
                                     <a href="#" class="add-transaction" data-toggle="collapse" data-target="#transactionForm">
                                         <span class="glyphicon glyphicon-plus-sign"></span> Add new transaction
                                     </a>

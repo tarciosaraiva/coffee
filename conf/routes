@@ -3,32 +3,33 @@
 # ~~~~
 
 # Login
-GET           /login                              controllers.Application.login
-POST          /login                              controllers.Application.auth
+GET           /login                                 controllers.Application.login
+POST          /login                                 controllers.Application.auth
 
 # Home page
-GET           /                                   controllers.Clients.home
-POST          /search                             controllers.Clients.search
-GET           /index/:index                       controllers.Clients.index(index: String)
+GET           /                                      controllers.Clients.home
+POST          /search                                controllers.Clients.search
+GET           /index/:index                          controllers.Clients.index(index: String)
 
 # Client record
-POST          /clients                            controllers.Clients.create
-GET           /clients/:id                        controllers.Clients.show(id: Long)
-POST          /clients/:id/transaction            controllers.Clients.transaction(id: Long)
+POST          /clients                               controllers.Clients.create
+GET           /clients/:id                           controllers.Clients.show(id: Long)
+POST          /clients/:id/transactions              controllers.Clients.transaction(id: Long)
+POST          /clients/:cId/transactions/:tId        controllers.Clients.deleteTransaction(cId: Long, tId: Long)
 
 # Settings
-GET           /settings                           controllers.Settings.show
-POST          /settings                           controllers.Settings.create
-PUT           /settings/:id                       controllers.Settings.update(id: Long)
-DELETE        /settings/:id                       controllers.Settings.delete(id: Long)
+GET           /settings                              controllers.Settings.show
+POST          /settings                              controllers.Settings.create
+PUT           /settings/:id                          controllers.Settings.update(id: Long)
+DELETE        /settings/:id                          controllers.Settings.delete(id: Long)
 
 # API Calls
-POST          /api/search                         controllers.Api.search
-GET           /api/index                          controllers.Api.indexes
-GET           /api/index/:index                   controllers.Api.index(index: String)
-GET           /api/clients/:id                    controllers.Api.client(id: Long)
-POST          /api/clients                        controllers.Api.newClient
-POST          /api/clients/:id/transaction        controllers.Api.newTransaction(id: Long)
+POST          /api/search                            controllers.Api.search
+GET           /api/index                             controllers.Api.indexes
+GET           /api/index/:index                      controllers.Api.index(index: String)
+GET           /api/clients/:id                       controllers.Api.client(id: Long)
+POST          /api/clients                           controllers.Api.newClient
+POST          /api/clients/:id/transaction           controllers.Api.newTransaction(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET           /assets/*file                       controllers.Assets.at(path="/public", file)
+GET           /assets/*file                          controllers.Assets.at(path="/public", file)

@@ -68,7 +68,7 @@ object Clients extends Controller with Secured {
         formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(id).get, Transaction.allByClient(id))),
         trans => {
           val amount = if (trans._3) trans._2 else trans._2.unary_-
-          addTransaction(id, Seq(Transaction(DateTime.now, trans._3, amount, trans._1, id)))
+          addTransaction(id, Seq(Transaction(Id(1), DateTime.now, trans._3, amount, trans._1, id)))
 
           if (trans._3) Client.markNotified(id)
 
@@ -105,17 +105,29 @@ object Clients extends Controller with Secured {
           val creditTransaction = true
 
           // add two transactions, one for the top-up
-          addTransaction(newClientId, Seq(Transaction(currentTime, creditTransaction, client._2, Option.apply(null), newClientId)), !client._6)
+          addTransaction(newClientId, Seq(Transaction(Id(1), currentTime, creditTransaction, client._2, Option.apply(null), newClientId)), !client._6)
 
           // and the other for the coffee
           if (client._6)
-            addTransaction(newClientId, Seq(Transaction(currentTime, !creditTransaction, BigDecimal(-3.4), Option.apply("Coffee"), newClientId)))
+            addTransaction(newClientId, Seq(Transaction(Id(1), currentTime, !creditTransaction, BigDecimal(-3.4), Option.apply("Coffee"), newClientId)))
 
           if (client._7)
             Redirect(routes.Clients.show(newClientId))
           else
             Redirect(routes.Clients.home).flashing(("success", "Client created successfully."))
         })
+  }
+
+  def deleteTransaction(cId: Long, tId: Long) = Action {
+    implicit request =>
+      val total = Client.deleteTransaction(cId, tId)
+      var flashMsg = ("error", "Could not delete transaction. Does it belong to this customer?")
+      if (total == 1) {
+        flashMsg = ("success", "Transaction deleted successfully.")
+        Client.updateBalance(cId)
+      }
+
+      Redirect(routes.Clients.show(cId)).flashing(flashMsg)
   }
 
 }

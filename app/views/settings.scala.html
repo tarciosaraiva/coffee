@@ -1,4 +1,4 @@
-@(form: Form[(String, String)], settingsSeq: Seq[Setting])(implicit flash: Flash, token: play.filters.csrf.CSRF.Token, settings: Seq[Setting])
+@(form: Form[(String, String)])(implicit flash: Flash, settings: Seq[Setting])
     @main {
         <div class="row">
             <div class="col-sm-12">
@@ -15,11 +15,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                        @settingsSeq.map { s =>
-                            <tr>
-                                <td>@s.key</td>
-                                <td>@s.value</td>
-                            </tr>
+                        @settings.map { s =>
+                            @if(!s.key.equals("title") && !s.key.equals("logo")) {
+                                <tr>
+                                    <td>@s.key</td>
+                                    <td>@s.value</td>
+                                </tr>
+                            }
                         }
                         </tbody>
                     </table>

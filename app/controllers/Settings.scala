@@ -18,13 +18,13 @@ object Settings extends Controller with Secured {
 
   def show = IsAuthenticated {
     user => implicit request =>
-      Ok(views.html.settings(creationForm, Setting.all))
+      Ok(views.html.settings(creationForm))
   }
 
   def create = IsAuthenticated {
     user => implicit request =>
       creationForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.settings(creationForm, Setting.all)),
+        formWithErrors => BadRequest(views.html.settings(creationForm)),
         setting => Redirect(routes.Settings.show)
       )
   }
@@ -32,7 +32,7 @@ object Settings extends Controller with Secured {
   def update(id: Long) = IsAuthenticated {
     user => implicit request =>
       creationForm.bindFromRequest.fold(
-        formWithErrors => BadRequest(views.html.settings(creationForm, Setting.all)),
+        formWithErrors => BadRequest(views.html.settings(creationForm)),
         setting => Redirect(routes.Settings.show)
       )
   }
