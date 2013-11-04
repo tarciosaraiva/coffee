@@ -1,0 +1,33 @@
+@(topups: List[(String, org.joda.time.LocalDate, java.math.BigDecimal)])(implicit flash: Flash, settings: Seq[Setting])
+@import utils.Utils._
+@main {
+    <div class="row">
+        <h2>Top ups</h2>
+        <p>This screen displays the last 3 days of deposits into customer's accounts ordered by date (most recent first).</p>
+        @if(topups.isEmpty) {
+            <p class="alert alert-warning">
+                There were no top-ups since yesterday.
+            </p>
+        } else {
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Client</th>
+                            <th>Topup amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @topups.map { t =>
+                        <tr>
+                            <td>@t._1</td>
+                            <td>@t._2</td>
+                            <td>@formatNumber(t._3)</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+}

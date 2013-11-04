@@ -62,8 +62,8 @@ object Clients extends Controller with Secured {
       Ok(views.html.client(transactionForm, Client.findOne(id).get, Transaction.allByClient(id)))
   }
 
-  def transaction(id: Long) = Action {
-    implicit request =>
+  def transaction(id: Long) = IsAuthenticated {
+    user => implicit request =>
       transactionForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(id).get, Transaction.allByClient(id))),
         trans => {
@@ -81,8 +81,8 @@ object Clients extends Controller with Secured {
       )
   }
 
-  def create = Action {
-    implicit request =>
+  def create = IsAuthenticated {
+    user => implicit request =>
       createForm.bindFromRequest.fold(
         formWithErrors => {
           Redirect(routes.Clients.home).flashing(("error", "Sorry, could not create client. Maybe you forgot to enter something?"))
@@ -118,8 +118,8 @@ object Clients extends Controller with Secured {
         })
   }
 
-  def deleteTransaction(cid: Long, tid: Long) = Action {
-    implicit request =>
+  def deleteTransaction(cid: Long, tid: Long) = IsAuthenticated {
+    user => implicit request =>
       val total = Client.deleteTransaction(cid, tid)
       var flashMsg = ("error", "Could not delete transaction. Does it belong to this customer?")
       if (total == 1) {
@@ -130,8 +130,8 @@ object Clients extends Controller with Secured {
       Redirect(routes.Clients.show(cid)).flashing(flashMsg)
   }
 
-  def editTransaction(cid: Long, tid: Long) = Action {
-    implicit request =>
+  def editTransaction(cid: Long, tid: Long) = IsAuthenticated {
+    user => implicit request =>
       transactionForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.client(formWithErrors, Client.findOne(cid).get, Transaction.allByClient(cid))),
         trans => {
@@ -139,6 +139,11 @@ object Clients extends Controller with Secured {
           Client.updateBalance(cid)
           Redirect(routes.Clients.show(cid)).flashing(("success", "Transaction updated successfully."))
         })
+  }
+
+  def topups = IsAuthenticated {
+    user => implicit request =>
+      Ok(views.html.topups(Client.findAllTopUps))
   }
 
 }

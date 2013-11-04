@@ -128,6 +128,22 @@ object Client {
     }
   }
 
+  def findAllTopUps: List[(String, LocalDate, java.math.BigDecimal)] = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("select concat(c.first_name, ' ', c.last_name) as name, t.transaction_date, t.amount from client c, transaction t " +
+          "where t.client_id = c.id " +
+          "and t.amount > 0 " +
+          "and t.transaction_date between {before} and {after}" +
+          "order by t.transaction_date desc")
+          .on(
+          'before -> LocalDate.now().minusDays(3),
+          'after -> LocalDate.now()
+        )
+          .as(str("name") ~ get[LocalDate]("transaction_date") ~ get[java.math.BigDecimal]("amount") map (flatten) *)
+    }
+  }
+
   def create(client: Client): Option[Long] = {
     DB.withConnection {
       implicit connection =>

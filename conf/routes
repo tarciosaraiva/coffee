@@ -13,6 +13,7 @@ GET           /index/:index                                 controllers.Clients.
 
 # Client record
 POST          /clients                                      controllers.Clients.create
+GET           /clients/topups                               controllers.Clients.topups
 GET           /clients/:id                                  controllers.Clients.show(id: Long)
 POST          /clients/:id/transactions                     controllers.Clients.transaction(id: Long)
 POST          /clients/:cid/transactions/:tid/delete        controllers.Clients.deleteTransaction(cid: Long, tid: Long)

@@ -15,18 +15,29 @@ object Global extends WithFilters(new GzipFilter()) {
     InitialData.insert()
 
     Akka.system.scheduler.schedule(0.second, 24.hour) {
-      Client.findAllWithEmailAndSmallBalance.foreach(sendEmail)
+      Client.findAllWithEmailAndSmallBalance.foreach(sendReminderEmail)
+//      Client.findAllTopUps.foreach(sendTopUpEmail)
     }
 
   }
 
-  def sendEmail(client: Client) {
+  def sendReminderEmail(client: Client) {
     val mail = use[MailerPlugin].email
     val clientEmail = client.email.get
 
-    mail.setSubject("mailer")
     mail.setRecipient(client.name + " <" + clientEmail + ">", clientEmail)
     mail.setSubject("Your balance with Black Velvet Espresso")
+    mail.setFrom("Black Velvet <noreply@blackvelvetespresso.com.au>")
+    mail.sendHtml(views.html.email.lowbalance(client).body)
+
+    Client.markNotified(client.id.get)
+  }
+
+  def sendTopUpEmail(client: Client) {
+    val mail = use[MailerPlugin].email
+
+    mail.setRecipient("Black Velvet <blackvelvetespresso@gmail.com>")
+    mail.setSubject("Summary of top ups")
     mail.setFrom("Black Velvet <noreply@blackvelvetespresso.com.au>")
     mail.sendHtml(views.html.email.lowbalance(client).body)
 
