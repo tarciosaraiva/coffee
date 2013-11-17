@@ -10,7 +10,10 @@ import anorm.Id
 
 object Api extends Controller {
 
-  implicit val searchReads = (__ \ 'term).read[String]
+  implicit val searchReads = (
+    (__ \ 'term).read[String] ~
+      (__ \ 'showHidden).read[Boolean]
+    ) tupled
 
   implicit val addClientReads = (
     (__ \ 'name).read[String] and
@@ -29,9 +32,9 @@ object Api extends Controller {
 
   def search = Action(parse.json) {
     request =>
-      request.body.validate[(String)].map {
-        case (term) => {
-          val result = Client.findByName(term)
+      request.body.validate[(String, Boolean)].map {
+        case (searchForm) => {
+          val result = Client.findByName(searchForm._1, searchForm._2)
           Ok(Json.obj("__total" -> result.size, "data" -> result.map(_.toJson)))
         }
       }.recoverTotal {
@@ -63,7 +66,7 @@ object Api extends Controller {
       request.body.validate[(String, BigDecimal, Option[String], Option[String], Option[LocalDate], Boolean)].map {
         case (name, balance, email, twitter, dob, addDebitTransaction) => {
           // add the client
-          val newClientId = Client.create(Client(Id(1), name, BigDecimal(0), email, twitter, dob, BigDecimal(0), false)).get
+          val newClientId = Client.create(Client(Id(1), name, BigDecimal(0), email, twitter, dob, BigDecimal(0), false, false)).get
 
           val currentTime = DateTime.now
           val creditTransaction = true

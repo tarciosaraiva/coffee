@@ -1,4 +1,4 @@
-@(form: Form[(String)], current: String, results: Seq[Client])(implicit flash: Flash, settings: Seq[Setting], indexes: Seq[String])
+@(form: Form[(String, Boolean)], current: String, results: Seq[Client])(implicit flash: Flash, settings: Seq[Setting], indexes: Seq[String])
 
     @import utils.Utils._
     @import tags._
@@ -16,6 +16,12 @@
                                 Search
                             </button>
                         </span>
+                    </div>
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" name="showHidden" value="true">
+                            Include hidden coffee addicts
+                        </label>
                     </div>
                 }
                 <hr/>
@@ -38,7 +44,12 @@
                         <li class="col-xs-12 col-sm-6">
                             <div class="client panel panel-primary">
                                 <a href="/clients/@client.id" class="info panel-heading">
-                                    <span class="name">@client.name</span>
+                                    <span class="name">
+                                    @client.name
+                                        @if(client.hidden) {
+                                            <small class="label label-default">Hidden</small>
+                                        }
+                                    </span>
                                     <span class="balance @balance(client.balance)">Balance of @formatNumber(client.balance)</span>
                                     @if(isBirthday(client.dob)) {
                                         <div class="birthday text-success">

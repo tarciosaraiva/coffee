@@ -14,9 +14,9 @@ import anorm.Id
 
 object Clients extends Controller with Secured {
 
-  val searchForm = Form("term" -> text.verifying("Please enter a search term.", {
+  val searchForm = Form(tuple("term" -> text.verifying("Please enter a search term.", {
     !_.grouped(2).isEmpty
-  }))
+  }), "showHidden" -> boolean))
 
   val transactionForm = Form(
     tuple(
@@ -48,7 +48,7 @@ object Clients extends Controller with Secured {
     implicit request =>
       searchForm.bindFromRequest.fold(
         formWithErrors => BadRequest(views.html.index(formWithErrors, "", List.empty)),
-        term => Ok(views.html.index(searchForm, "", Client.findByName(term)))
+        frm => Ok(views.html.index(searchForm, "", Client.findByName(frm._1, frm._2)))
       )
   }
 
@@ -98,6 +98,7 @@ object Clients extends Controller with Secured {
               client._4,
               client._5,
               BigDecimal(0),
+              false,
               false)
           ).get
 
@@ -144,6 +145,11 @@ object Clients extends Controller with Secured {
   def topups = IsAuthenticated {
     user => implicit request =>
       Ok(views.html.topups(Client.findAllTopUps))
+  }
+
+  def toggle(cid: Long) = IsAuthenticated { user => implicit request =>
+    Client.toggleVisibility(cid)
+    Redirect(routes.Clients.show(cid)).flashing(("success", "Client successfully hidden."))
   }
 
 }

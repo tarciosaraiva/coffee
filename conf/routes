@@ -15,6 +15,7 @@ GET           /index/:index                                 controllers.Clients.
 POST          /clients                                      controllers.Clients.create
 GET           /clients/topups                               controllers.Clients.topups
 GET           /clients/:id                                  controllers.Clients.show(id: Long)
+GET           /clients/:cid/toggle                            controllers.Clients.toggle(cid: Long)
 POST          /clients/:id/transactions                     controllers.Clients.transaction(id: Long)
 POST          /clients/:cid/transactions/:tid/delete        controllers.Clients.deleteTransaction(cid: Long, tid: Long)
 POST          /clients/:cid/transactions/:tid/edit          controllers.Clients.editTransaction(cid: Long, tid: Long)

@@ -12,7 +12,7 @@ import org.joda.time._
 import utils.AnormExtension._
 
 case class Client(id: Pk[Long], name: String, balance: BigDecimal, email: Option[String], twitter: Option[String],
-                  dob: Option[LocalDate], lastTransactionAmount: BigDecimal, notified: Boolean) {
+                  dob: Option[LocalDate], lastTransactionAmount: BigDecimal, notified: Boolean, hidden: Boolean) {
 
   val clientWrites = new Writes[Client] {
     def writes(c: Client): JsValue = Json.obj(
@@ -40,9 +40,10 @@ object Client {
       get[Option[String]]("client.twitter") ~
       get[Option[LocalDate]]("client.dob") ~
       get[java.math.BigDecimal]("last_transaction_amount") ~
-      get[Boolean]("notified") map {
-      case id ~ name ~ balance ~ email ~ twitter ~ dob ~ last_transaction_amount ~ notified => {
-        Client(id, name, BigDecimal(balance), email, twitter, dob, BigDecimal(last_transaction_amount), notified)
+      get[Boolean]("notified") ~
+      get[Boolean]("hidden") map {
+      case id ~ name ~ balance ~ email ~ twitter ~ dob ~ last_transaction_amount ~ notified ~ hidden => {
+        Client(id, name, BigDecimal(balance), email, twitter, dob, BigDecimal(last_transaction_amount), notified, hidden)
       }
     }
   }
@@ -50,7 +51,7 @@ object Client {
   def indexes: Seq[String] = {
     DB.withConnection {
       implicit connection =>
-        SQL("SELECT DISTINCT UPPER(LEFT(c.first_name, 1)) as itm FROM CLIENT C ORDER BY 1").as(str("itm") *)
+        SQL("SELECT DISTINCT UPPER(LEFT(c.first_name, 1)) as itm FROM CLIENT C WHERE C.hidden = false ORDER BY 1").as(str("itm") *)
     }
   }
 
@@ -59,21 +60,23 @@ object Client {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) as name, balance, email, twitter, dob, " +
           "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified " +
-          "from client where lower(first_name) like lower({name}) order by 1")
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified, hidden " +
+          "from client where lower(first_name) like lower({name}) and hidden = false order by 2")
           .on('name -> index.concat("%"))
           .as(Client.simple *)
     }
   }
 
-  def findByName(name: String): Seq[Client] = {
+  def findByName(name: String, showHidden: Boolean): Seq[Client] = {
     DB.withConnection {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
           "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified " +
-          "from client where lower(first_name) like lower({name}) order by 1")
-          .on('name -> "%".concat(name).concat("%"))
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified, hidden " +
+          "from client where lower(first_name) like lower({name}) and (hidden = false or hidden = {showHidden}) order by 2")
+          .on(
+          'name -> "%".concat(name).concat("%"),
+          'showHidden -> showHidden)
           .as(Client.simple *)
     }
   }
@@ -83,7 +86,7 @@ object Client {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
           "coalesce((select abs(amount) from transaction where client_id = client.id and credit = false " +
-          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified " +
+          "order by transaction_date desc limit 1), 0) as last_transaction_amount, notified, hidden " +
           "from client where id = {id}")
           .on('id -> id)
           .as(Client.simple.singleOpt)
@@ -94,7 +97,7 @@ object Client {
     DB.withConnection {
       implicit connection =>
         SQL("select id, concat(first_name, ' ', last_name) AS name, balance, email, twitter, dob, " +
-          "0.0 as last_transaction_amount, notified " +
+          "0.0 as last_transaction_amount, notified, hidden " +
           "from client where email is not null and balance < 5 and notified = false")
           .as(Client.simple *)
     }
@@ -123,6 +126,15 @@ object Client {
     DB.withConnection {
       implicit connection =>
         SQL("update client set notified = not(notified) where id = {id}")
+          .on('id -> id)
+          .executeUpdate()
+    }
+  }
+
+  def toggleVisibility(id: Long): Int = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("update client set hidden = not(hidden) where id = {id}")
           .on('id -> id)
           .executeUpdate()
     }
