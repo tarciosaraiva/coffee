@@ -112,6 +112,24 @@ object Client {
     }
   }
 
+  def updateDetails(id: Long, details: (String, Option[String], Option[String], Option[LocalDate])): Int = {
+    DB.withConnection {
+      implicit connection =>
+        val splitName = details._1.split(" ")
+        SQL("update client set first_name = {fn}, last_name = {ln}, email = {email}, twitter = {twitter}, dob = {dob} where id = {id}")
+          .on(
+          'id -> id,
+          'fn -> splitName(0),
+          'ln -> {
+            if (splitName.length == 2) splitName(1) else ""
+          },
+          'email -> details._2,
+          'twitter -> details._3,
+          'dob -> details._4
+        ).executeUpdate()
+    }
+  }
+
   def deleteTransaction(cId: Long, tId: Long): Int = {
     DB.withConnection {
       implicit connection =>

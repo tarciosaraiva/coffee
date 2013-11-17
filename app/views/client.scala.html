@@ -5,7 +5,7 @@
     <div class="row">
         <div class="col-sm-9">
             <div class="row">
-                <div class="col-sm-9">
+                <div class="col-sm-8">
                     <h2>
                         @client.name
                         @if(!client.twitter.isEmpty) {
@@ -14,7 +14,7 @@
                         }
                     </h2>
                 </div>
-                <div class="col-sm-3">
+                <div class="col-sm-4">
                     <h2>
                         <a class="btn btn-danger" href="/clients/@client.id/toggle">
                             @if(client.hidden) {
@@ -22,6 +22,9 @@
                             } else {
                                 Hide this client
                             }
+                        </a>
+                        <a class="btn btn-default" href="#editClientModal" data-toggle="modal">
+                            <span class="glyphicon glyphicon-pencil"></span>
                         </a>
                     </h2>
                 </div>
@@ -81,7 +84,7 @@
                                     @helper.form(action = routes.Clients.editTransaction(client.id.get, t.id.get), 'class -> "modal-content", 'role -> "form", 'id -> "edit-customer-form") {
                                         <div class="modal-header">
                                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title">Edit customer</h4>
+                                            <h4 class="modal-title">Edit transaction</h4>
                                         </div>
                                         <div class="modal-body">
                                             <div class="form-group">
@@ -169,5 +172,60 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="editClientModal" tabindex="-1" role="dialog" aria-labelledby="Edit client" aria-hidden="true">
+        <div class="modal-dialog">
+        @helper.form(action = routes.Clients.edit(client.id.get), 'class -> "modal-content", 'role -> "form", 'id -> "edit-client-form") {
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Edit client</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="sr-only" for="amount">Enter customer first and last names only</label>
+                    <input type="text" placeholder="Enter customer first and last names" name="name" id="name" class="form-control" value="@client.name">
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="amount">Enter email</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-envelope"></span>
+                        </span>
+                        @client.email match {
+                            case Some(e) => { <input type="email" placeholder="Enter email" name="email" id="email" class="form-control" value="@e"> }
+                            case None => { <input type="email" placeholder="Enter email" name="email" id="email" class="form-control"> }
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="amount">Enter date of birth</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                        <input type="number" placeholder="Enter date of birth (format is DDMM)" name="dob" id="dob" class="form-control"  value="@formatLocalDate(client.dob)">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="sr-only" for="amount">Enter twitter handle</label>
+                    <div class="input-group">
+                        <span class="input-group-addon">
+                            <img src="@routes.Assets.at("images/twitter-small.png")"/>
+                        </span>
+                        @client.twitter match {
+                            case Some(t) => { <input type="text" placeholder="Enter twitter handle" name="twitter" id="twitter" class="form-control"  value="@t"> }
+                            case None => { <input type="text" placeholder="Enter twitter handle" name="twitter" id="twitter" class="form-control"> }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        }
+        </div> <!-- /.modal-dialog -->
+    </div> <!-- /.modal -->
 
 }

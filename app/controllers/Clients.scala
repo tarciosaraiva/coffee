@@ -35,6 +35,13 @@ object Clients extends Controller with Secured {
     "goToCustomerRecord" -> boolean
   ))
 
+  val editForm = Form(tuple(
+    "name" -> nonEmptyText,
+    "email" -> optional(text),
+    "twitter" -> optional(text),
+    "dob" -> optional(jodaLocalDate("ddMM"))
+  ))
+
   implicit val settings: Seq[Setting] = Setting.all
 
   implicit def indexes: Seq[String] = Client.indexes
@@ -119,6 +126,17 @@ object Clients extends Controller with Secured {
         })
   }
 
+  def edit(id: Long) = IsAuthenticated {
+    user => implicit request =>
+      editForm.bindFromRequest.fold(
+        formWithErrors => BadRequest,
+        updatedClient => {
+          Client.updateDetails(id, updatedClient)
+          Redirect(routes.Clients.show(id)).flashing(("success", "Client updated successfully."))
+        }
+      )
+  }
+
   def deleteTransaction(cid: Long, tid: Long) = IsAuthenticated {
     user => implicit request =>
       val total = Client.deleteTransaction(cid, tid)
@@ -147,9 +165,10 @@ object Clients extends Controller with Secured {
       Ok(views.html.topups(Client.findAllTopUps))
   }
 
-  def toggle(cid: Long) = IsAuthenticated { user => implicit request =>
-    Client.toggleVisibility(cid)
-    Redirect(routes.Clients.show(cid)).flashing(("success", "Client successfully hidden."))
+  def toggle(cid: Long) = IsAuthenticated {
+    user => implicit request =>
+      Client.toggleVisibility(cid)
+      Redirect(routes.Clients.show(cid)).flashing(("success", "Client successfully hidden."))
   }
 
 }

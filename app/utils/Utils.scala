@@ -14,6 +14,13 @@ object Utils {
     new SimpleDateFormat("dd MMM h:mm a").format(dateTime.withZone(DateTimeZone.forID("Australia/Melbourne")).toDate)
   }
 
+  def formatLocalDate(localDate: Option[LocalDate]) = {
+    localDate match {
+      case Some(d) => new SimpleDateFormat("ddMM").format(d.toDate)
+      case None => ""
+    }
+  }
+
   def isBirthday(birthDate: Option[LocalDate]): Boolean = {
     if (birthDate.isEmpty) return false
 
