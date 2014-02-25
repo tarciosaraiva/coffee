@@ -158,6 +158,15 @@ object Client {
     }
   }
 
+  def delete(id: Long): Int = {
+    DB.withConnection {
+      implicit connection =>
+        SQL("delete from client where id = {id}")
+          .on('id -> id)
+          .executeUpdate()
+    }
+  }
+
   def findAllTopUps: List[(String, LocalDate, java.math.BigDecimal)] = {
     DB.withConnection {
       implicit connection =>

@@ -16,7 +16,7 @@ POST          /clients                                      controllers.Clients.
 GET           /clients/topups                               controllers.Clients.topups
 GET           /clients/:id                                  controllers.Clients.show(id: Long)
 POST          /clients/:id/edit                             controllers.Clients.edit(id: Long)
-GET           /clients/:cid/toggle                          controllers.Clients.toggle(cid: Long)
+GET           /clients/:cid/delete                          controllers.Clients.delete(cid: Long)
 POST          /clients/:id/transactions                     controllers.Clients.transaction(id: Long)
 POST          /clients/:cid/transactions/:tid/delete        controllers.Clients.deleteTransaction(cid: Long, tid: Long)
 POST          /clients/:cid/transactions/:tid/edit          controllers.Clients.editTransaction(cid: Long, tid: Long)

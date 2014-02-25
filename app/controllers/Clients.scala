@@ -165,10 +165,10 @@ object Clients extends Controller with Secured {
       Ok(views.html.topups(Client.findAllTopUps))
   }
 
-  def toggle(cid: Long) = IsAuthenticated {
+  def delete(cid: Long) = IsAuthenticated {
     user => implicit request =>
-      Client.toggleVisibility(cid)
-      Redirect(routes.Clients.show(cid)).flashing(("success", "Client successfully hidden."))
+      Client.delete(cid)
+      Redirect(routes.Clients.home).flashing(("success", "Client successfully deleted."))
   }
 
 }
